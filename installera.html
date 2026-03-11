@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ladda ner SR Live som app</title>
+  <meta name="description" content="Så här installerar du SR Live på hemskärmen — fungerar på iPhone, Android och dator.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sr.liot.se/installera">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #F0EFEB;
+      --surface:      #FFFFFF;
+      --surface2:     #F5F4F0;
+      --border:       #DDDBD5;
+      --text:         #1A1A1A;
+      --text-muted:   #6B6860;
+      --accent:       #0056A8;
+      --accent-light: #E8F0FA;
+      --accent-hover: #003F80;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .header-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .wordmark {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .wordmark:hover { color: var(--accent); }
+
+    .header-sep { color: var(--border); }
+
+    .header-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      line-height: 1.2;
+    }
+
+    .lead {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 3rem;
+    }
+
+    /* Platform cards */
+    .platform {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .platform-header {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .platform-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .platform-icon.ios     { background: #000; color: #fff; }
+    .platform-icon.android { background: #3DDC84; color: #000; }
+    .platform-icon.desktop { background: var(--accent-light); color: var(--accent); }
+
+    .platform-icon svg { width: 24px; height: 24px; }
+
+    .platform-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .platform-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 0.9rem; }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-text {
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: var(--text);
+      padding-top: 3px;
+    }
+
+    .step-text strong { font-weight: 700; }
+
+    .step-text .icon-inline {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      width: 18px;
+      height: 18px;
+      margin: 0 2px;
+      position: relative;
+      top: -1px;
+    }
+
+    .tip {
+      margin-top: 1.25rem;
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: var(--accent);
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem 2rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+
+    .legal {
+      text-align: center;
+      padding: 0.75rem 2rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 2rem 1.25rem 4rem; }
+      h1 { font-size: 1.5rem; }
+      .header-inner { padding: 1rem 1.25rem; }
+      .platform { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a class="wordmark" href="/">Sveriges Radio &mdash; Live</a>
+      <span class="header-sep">/</span>
+      <span class="header-title">Installera</span>
+    </div>
+  </header>
+
+  <main>
+    <h1>Ladda ner som app</h1>
+    <p class="lead">SR Live kan sparas på hemskärmen och användas som en vanlig app — utan att gå via App Store eller Google Play. Välj din enhet nedan.</p>
+
+    <!-- iOS -->
+    <div class="platform">
+      <div class="platform-header">
+        <div class="platform-icon ios">
+          <!-- Apple logo -->
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        </div>
+        <div>
+          <div class="platform-name">iPhone &amp; iPad</div>
+          <div class="platform-sub">Safari — iOS 14 eller senare</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Öppna <strong>sr.liot.se</strong> i Safari.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Tryck på <strong>dela-knappen</strong>
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            längst ned i skärmen (fyrkant med pil uppåt).
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Scrolla ned i menyn och välj <strong>"Lägg till på hemskärmen"</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Tryck på <strong>"Lägg till"</strong> uppe till höger. Klart!</div>
+        </div>
+      </div>
+      <div class="tip">SR Live öppnas då som en helskärmsapp utan adressfält, precis som en vanlig app.</div>
+    </div>
+
+    <!-- Android -->
+    <div class="platform">
+      <div class="platform-header">
+        <div class="platform-icon android">
+          <!-- Android logo -->
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24A9.82 9.82 0 0 0 12 8c-1.64 0-3.18.43-4.49 1.18L5.65 5.94a.64.64 0 0 0-.86-.2.64.64 0 0 0-.2.86l1.84 3.18A9.44 9.44 0 0 0 2.5 17h19a9.44 9.44 0 0 0-3.9-7.52zM7.5 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm9 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+        </div>
+        <div>
+          <div class="platform-name">Android</div>
+          <div class="platform-sub">Chrome</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Öppna <strong>sr.liot.se</strong> i Chrome.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Tryck på <strong>menyn</strong>
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            (tre punkter) uppe till höger.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Välj <strong>"Lägg till på startskärmen"</strong> eller <strong>"Installera app"</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Bekräfta med <strong>"Installera"</strong> i dialogrutan. Klart!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop -->
+    <div class="platform">
+      <div class="platform-header">
+        <div class="platform-icon desktop">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h3l-1 1v1h12v-1l-1-1h3c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H4V5h16v11z"/></svg>
+        </div>
+        <div>
+          <div class="platform-name">Dator</div>
+          <div class="platform-sub">Chrome eller Edge</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Öppna <strong>sr.liot.se</strong> i Chrome eller Edge.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Klicka på <strong>installations-ikonen</strong>
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5v-2z"/></svg>
+            i adressfältet (längst till höger), eller öppna <strong>menyn → "Installera SR Live"</strong>.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Klicka på <strong>"Installera"</strong> i dialogrutan. Klart!</div>
+        </div>
+      </div>
+      <div class="tip">På dator öppnas SR Live i ett eget fönster utan webbläsarens krom — som ett vanligt program.</div>
+    </div>
+
+  </main>
+
+  <footer>
+    <a href="/">Tillbaka till spelaren</a>
+    &mdash;
+    <a href="/om">Om SR Live</a>
+    &mdash;
+    <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener">Källkod på GitHub</a>
+  </footer>
+  <p class="legal">Detta projekt är inte affilierat med Sveriges Radio.</p>
+
+</body>
+</html>
