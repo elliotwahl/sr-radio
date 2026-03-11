@@ -1,4 +1,4 @@
-# SR Live
+# Vevradion
 
 En enkel webbspelare för Sveriges Radios alla kanaler. Passar både som nödfallsalternativ när SR:s egna plattformar (sverigesradio.se, appen) inte fungerar — och som ett renare, enklare sätt att lyssna i vardagen.
 
