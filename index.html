@@ -417,6 +417,71 @@
 
     footer a:hover { text-decoration: underline; }
 
+    /* ─── LANGUAGE SELECTOR ──────────────────── */
+    .lang-sel {
+      font-family: 'Figtree', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      outline: none;
+      max-width: 150px;
+    }
+    .lang-sel:hover,
+    .lang-sel:focus { border-color: var(--accent); }
+
+    /* ─── DISCLAIMER ─────────────────────────── */
+    .disclaimer {
+      background: #FFFBEB;
+      border-bottom: 1px solid #FCD34D;
+      padding: 0.75rem 2rem;
+    }
+    .disclaimer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .disclaimer-lines {
+      flex: 1;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #78350F;
+    }
+    .disclaimer-lines p + p { margin-top: 0.1rem; }
+    .disclaimer-close {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #92400E;
+      font-size: 1rem;
+      padding: 0.1rem 0.35rem;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .disclaimer-close:hover { background: rgba(0,0,0,0.07); }
+
+    /* ─── CHANNEL LANG BADGE ─────────────────── */
+    .ch-lang-badge {
+      display: none;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      border: 1px solid rgba(0,86,168,0.2);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
+
     /* ─── RESPONSIVE ──────────────────────────── */
     @media (max-width: 720px) {
       .header-inner {
@@ -449,7 +514,7 @@
       <!-- Station display -->
       <div class="station-info">
         <div class="station-text">
-          <div class="wordmark">Sveriges Radio &mdash; Live</div>
+          <div class="wordmark" id="i18n-wordmark">Sveriges Radio &mdash; Live</div>
           <div class="station-name idle" id="stationName">Välj en kanal</div>
           <div class="station-sub" id="stationSub"></div>
         </div>
@@ -486,6 +551,19 @@
           <button class="q-btn" data-q="flac" title="Endast tillgänglig för P2">FLAC</button>
         </div>
 
+        <select id="langSel" class="lang-sel" aria-label="Välj språk / Select language">
+          <option value="sv">Svenska</option>
+          <option value="en">English</option>
+          <option value="fi">Suomi</option>
+          <option value="se">Davvisámegiella</option>
+          <option value="fit">Meänkieli</option>
+          <option value="rom">Romani</option>
+          <option value="yi">ייִדיש</option>
+          <option value="ar">العربية</option>
+          <option value="fa">فارسی</option>
+          <option value="so">Soomaali</option>
+        </select>
+
         <button class="play-btn" id="playBtn" disabled>
           <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon">
             <path d="M8 5v14l11-7z"/>
@@ -495,12 +573,19 @@
     </div>
   </header>
 
+  <div id="disclaimer" class="disclaimer" style="display:none">
+    <div class="disclaimer-inner">
+      <div class="disclaimer-lines" id="disclaimerLines"></div>
+      <button class="disclaimer-close" id="disclaimerClose" aria-label="Stäng">✕</button>
+    </div>
+  </div>
+
   <main>
     <p class="intro">Lyssna på Sveriges Radio live direkt i webbläsaren — fungerar även när <strong>sverigesradio.se är nere</strong> eller SR-appen inte svarar. Välj kanal nedan.</p>
 
     <section class="section">
       <div class="section-head">
-        <span class="section-label">Rikskanaler</span>
+        <span class="section-label" id="i18n-national">Rikskanaler</span>
         <div class="section-line"></div>
       </div>
       <div class="grid grid-national" id="grid-national"></div>
@@ -508,7 +593,7 @@
 
     <section class="section">
       <div class="section-head">
-        <span class="section-label">Övriga kanaler</span>
+        <span class="section-label" id="i18n-special">Övriga kanaler</span>
         <div class="section-line"></div>
       </div>
       <div class="grid grid-special" id="grid-special"></div>
@@ -516,7 +601,7 @@
 
     <section class="section">
       <div class="section-head">
-        <span class="section-label">Lokala P4-kanaler</span>
+        <span class="section-label" id="i18n-local">Lokala P4-kanaler</span>
         <div class="section-line"></div>
       </div>
       <div class="grid grid-local" id="grid-local"></div>
@@ -524,61 +609,218 @@
   </main>
 
   <footer>
-    Byggd av <a href="https://elliotwahl.se" target="_blank" rel="noopener">Elliot Wahl</a>
+    <span id="i18n-built-by">Byggd av</span> <a href="https://elliotwahl.se" target="_blank" rel="noopener">Elliot Wahl</a>
     &mdash; Strömmar via Sveriges Radios publika direktlänkar &mdash;
-    <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener">Källkod på GitHub</a>
+    <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener" id="i18n-source">Källkod på GitHub</a>
   </footer>
 
   <audio id="audio" preload="none"></audio>
 
   <script>
-    // ── Data ────────────────────────────────────────────────────
+    // ── Language data ───────────────────────────────────────────
+    const LANGS = {
+      sv: {
+        name: 'Svenska', dir: 'ltr', channelId: null,
+        s: {
+          wordmark: 'Sveriges Radio \u2014 Live',
+          idle: 'Välj en kanal',
+          offline: 'offline', live: 'live', loading: 'laddar', paused: 'pausad', error: 'fel',
+          national: 'Rikskanaler', special: 'Övriga kanaler', local: 'Lokala P4-kanaler',
+          intro: 'Lyssna på Sveriges Radio live direkt i webbläsaren \u2014 fungerar även när <strong>sverigesradio.se är nere</strong> eller SR-appen inte svarar. Välj kanal nedan.',
+          langBadge: 'Sänder på detta språk', disclaimer: null,
+          built_by: 'Byggd av', source: 'Källkod på GitHub',
+          p1: 'Nyheter & kultur', p2: 'Klassiskt & jazz', p3: 'Pop & underhållning',
+          p6: 'Rock & alternativt', ekotdirekt: 'Nyhetssändningar', dingata: 'Hiphop & soul',
+          p4plus: 'Underhållning', p4digi: 'Digital', knattekanalen: 'Radioapans barnkanal',
+          sameradion: 'Samisk radio', finska: 'Sveriges Radio Finska',
+        }
+      },
+      en: {
+        name: 'English', dir: 'ltr', channelId: null,
+        s: {
+          wordmark: 'Sveriges Radio \u2014 Live',
+          idle: 'Select a channel',
+          offline: 'offline', live: 'live', loading: 'loading', paused: 'paused', error: 'error',
+          national: 'National channels', special: 'Other channels', local: 'Local P4 channels',
+          intro: 'Listen to Sveriges Radio live directly in your browser \u2014 works even when <strong>sverigesradio.se is down</strong> or the SR app is not responding. Select a channel below.',
+          langBadge: 'Broadcasts in this language',
+          disclaimer: 'Note: This page has been translated using AI and has not been reviewed by a human.',
+          built_by: 'Built by', source: 'Source code on GitHub',
+          p1: 'News & culture', p2: 'Classical & jazz', p3: 'Pop & entertainment',
+          p6: 'Rock & alternative', ekotdirekt: 'News broadcasts', dingata: 'Hip-hop & soul',
+          p4plus: 'Entertainment', p4digi: 'Digital', knattekanalen: "Children's channel",
+          sameradion: 'Sámi radio', finska: 'Sveriges Radio in Finnish',
+        }
+      },
+      fi: {
+        name: 'Suomi', dir: 'ltr', channelId: 'finska',
+        s: {
+          wordmark: 'Sveriges Radio \u2014 Suorana',
+          idle: 'Valitse kanava',
+          offline: 'offline', live: 'suorana', loading: 'ladataan', paused: 'tauolla', error: 'virhe',
+          national: 'Valtakunnalliset kanavat', special: 'Muut kanavat', local: 'Paikalliset P4-kanavat',
+          intro: 'Kuuntele Sveriges Radiota suorana selaimessasi \u2014 toimii myös kun <strong>sverigesradio.se on alhaalla</strong> tai SR-sovellus ei vastaa. Valitse kanava alta.',
+          langBadge: 'Lähettää tällä kielellä',
+          disclaimer: 'Huom: Tämän sivun sisältö on käännetty tekoälyllä eikä ihminen ole tarkistanut sitä.',
+          built_by: 'Rakentanut', source: 'Lähdekoodi GitHubissa',
+          p1: 'Uutiset & kulttuuri', p2: 'Klassinen & jazz', p3: 'Pop & viihde',
+          p6: 'Rock & vaihtoehtoinen', ekotdirekt: 'Uutislähetykset', dingata: 'Hiphop & soul',
+          p4plus: 'Viihde', p4digi: 'Digitaalinen', knattekanalen: 'Radioapan lasten kanava',
+          sameradion: 'Saamelainen radio', finska: 'Sveriges Radio suomeksi',
+        }
+      },
+      se: {
+        name: 'Davvisámegiella', dir: 'ltr', channelId: 'sameradion',
+        s: {
+          wordmark: 'Sveriges Radio \u2014 Njuolga',
+          idle: 'Vállje kanála',
+          offline: 'offline', live: 'njuolga', loading: 'loaktá', paused: 'bisuhan', error: 'boasttu',
+          national: 'Nationála kanálat', special: 'Eará kanálat', local: 'Báikkálaš P4-kanálat',
+          intro: 'Gulan Sveriges Radio njuolga neahttabávttis \u2014 bargá maiddái go <strong>sverigesradio.se ii doaimma</strong> dahje SR-app ii vástidit. Vállje kanála vuolde.',
+          langBadge: 'Sádde dán gillii',
+          disclaimer: 'Fuomáš: Siidu sisdoallu lea jorgaluvvon AI-bargguin, ii leat olbmo dárkkistan.',
+          built_by: 'Dahkan', source: 'Källkod på GitHub',
+          p1: 'Ođđasat & kultuvra', p2: 'Klassihkka & jazz', p3: 'Pop & suohtas',
+          p6: 'Rock & alternatihva', ekotdirekt: 'Ođđasatsáddehit', dingata: 'Hiphop & soul',
+          p4plus: 'Suohtas', p4digi: 'Digitála', knattekanalen: 'Mánáidkanála',
+          sameradion: 'Sámi radio', finska: 'Sveriges Radio suomagielas',
+        }
+      },
+      fit: {
+        name: 'Meänkieli', dir: 'ltr', channelId: null,
+        s: {
+          wordmark: 'Sveriges Radio \u2014 Suohraan',
+          idle: 'Välithe kanava',
+          offline: 'offline', live: 'suohraan', loading: 'lahataan', paused: 'tauolla', error: 'vikka',
+          national: 'Valtakunnaliset kanavat', special: 'Muut kanavat', local: 'Paikalliset P4-kanavat',
+          intro: 'Kuuntele Sveriges Radiota suohraan selväimessa \u2014 toimii myös ko <strong>sverigesradio.se oon alhaalla</strong> eli SR-sovellus ei vastaa. Välithe kanava alhaaltha.',
+          langBadge: 'Sänttää tälä kielälä',
+          disclaimer: 'Huomio: Tämän sivun sisältö oon käännetty AI:lla eikä ihminen ole tarkistanut sitä.',
+          built_by: 'Tehny', source: 'Källkod på GitHub',
+          p1: 'Uutiset & kulttuuri', p2: 'Klassinen & jazz', p3: 'Pop & huvi',
+          p6: 'Rock & vaihtoehtoinen', ekotdirekt: 'Uutislähetykset', dingata: 'Hiphop & soul',
+          p4plus: 'Huvi', p4digi: 'Digitaalinen', knattekanalen: 'Radioapan lasten kanava',
+          sameradion: 'Saamelainen radio', finska: 'Sveriges Radio suomeksi',
+        }
+      },
+      rom: {
+        name: 'Romani', dir: 'ltr', channelId: null,
+        s: {
+          wordmark: 'Sveriges Radio \u2014 Živindo',
+          idle: 'Čhun kanáli',
+          offline: 'offline', live: 'živindo', loading: 'lovel', paused: 'ačhado', error: 'gaži',
+          national: 'Nacionálne kanále', special: 'Aver kanále', local: 'Lokálne P4-kanále',
+          intro: 'Šun Sveriges Radio živindo ando brauzeri \u2014 khelel vi kana <strong>sverigesradio.se nane šukar</strong> vaj SR-app nane delas duma. Čhun kanáli tele.',
+          langBadge: 'Phukavel pe kala čhib',
+          disclaimer: 'Lav: E robipen kotar o sajtis kerdi les AI thaj či mothadi manuš.',
+          built_by: 'Kerdino katar', source: 'Källkod på GitHub',
+          p1: 'Haberya & kultura', p2: 'Klasika & jazz', p3: 'Pop & temaša',
+          p6: 'Rock & alternativo', ekotdirekt: 'Haberya živindo', dingata: 'Hiphop & soul',
+          p4plus: 'Temaša', p4digi: 'Digitálno', knattekanalen: 'Čhavorrenge kanáli',
+          sameradion: 'Sámi radio', finska: 'Sveriges Radio finsko',
+        }
+      },
+      yi: {
+        name: 'ייִדיש', dir: 'rtl', channelId: null,
+        s: {
+          wordmark: 'שוועדישן ראַדיאָ \u2014 לייוו',
+          idle: 'קלייַב אויס אַ קאַנאַל',
+          offline: 'אָפֿלײַן', live: 'לייוו', loading: 'לאָדן', paused: 'אָפּגעשטעלט', error: 'טעות',
+          national: 'נאַציאָנאַלע קאַנאַלן', special: 'אַנדערע קאַנאַלן', local: 'לאָקאַלע P4-קאַנאַלן',
+          intro: 'הער שוועדישן ראַדיאָ לייוו גלײַך אין דײַן בלעטערער \u2014 אַרבעט אַפֿילו ווען <strong>sverigesradio.se איז אַראָפּ</strong> אָדער SR-אַפּ ענטפֿערט נישט. קלייַב אויס אַ קאַנאַל אונטן.',
+          langBadge: 'שיקט אויף דעם שפּראַך',
+          disclaimer: 'הערונג: דער אינהאַלט פֿון דעם בלאַט איז איבערגעזעצט מיט AI און איז נישט באַפּרוּווט דורך אַ מענטש.',
+          built_by: 'געבויט דורך', source: 'מקור-קאָד אויף GitHub',
+          p1: 'נייַעס & קולטור', p2: 'קלאַסיש & דזשאַז', p3: 'פּאָפּ & פֿאַרגעניגן',
+          p6: 'ראָק & אַלטערנאַטיוו', ekotdirekt: 'נייַעס-זענדונגען', dingata: 'היפּהאָפּ & סאָול',
+          p4plus: 'פֿאַרגעניגן', p4digi: 'דיגיטאַל', knattekanalen: 'קינדערקאַנאַל',
+          sameradion: 'סאַמישע ראַדיאָ', finska: 'שוועדישן ראַדיאָ אויף פֿיניש',
+        }
+      },
+      ar: {
+        name: 'العربية', dir: 'rtl', channelId: null,
+        s: {
+          wordmark: 'الراديو السويدي \u2014 بث مباشر',
+          idle: 'اختر قناة',
+          offline: 'غير متصل', live: 'مباشر', loading: 'جارٍ التحميل', paused: 'متوقف مؤقتاً', error: 'خطأ',
+          national: 'القنوات الوطنية', special: 'قنوات أخرى', local: 'قنوات P4 المحلية',
+          intro: 'استمع إلى الراديو السويدي مباشرةً في متصفحك \u2014 يعمل حتى عندما <strong>يكون sverigesradio.se معطلاً</strong> أو عندما لا يستجيب تطبيق SR. اختر قناة أدناه.',
+          langBadge: 'يبث بهذه اللغة',
+          disclaimer: 'ملاحظة: تمت ترجمة محتوى هذه الصفحة باستخدام الذكاء الاصطناعي ولم يراجعها أي إنسان.',
+          built_by: 'بناه', source: 'الكود المصدري على GitHub',
+          p1: 'أخبار وثقافة', p2: 'موسيقى كلاسيكية وجاز', p3: 'بوب وترفيه',
+          p6: 'روك وبديل', ekotdirekt: 'نشرات إخبارية', dingata: 'هيب هوب وسول',
+          p4plus: 'ترفيه', p4digi: 'رقمي', knattekanalen: 'قناة الأطفال',
+          sameradion: 'راديو السامي', finska: 'الراديو السويدي بالفنلندية',
+        }
+      },
+      fa: {
+        name: 'فارسی', dir: 'rtl', channelId: null,
+        s: {
+          wordmark: 'رادیوی سوئد \u2014 پخش زنده',
+          idle: 'یک کانال انتخاب کنید',
+          offline: 'آفلاین', live: 'زنده', loading: 'در حال بارگذاری', paused: 'مکث', error: 'خطا',
+          national: 'کانال\u200Cهای ملی', special: 'کانال\u200Cهای دیگر', local: 'کانال\u200Cهای محلی P4',
+          intro: 'رادیوی سوئد را مستقیماً در مرورگر خود گوش دهید \u2014 حتی وقتی <strong>sverigesradio.se از دسترس خارج است</strong> یا برنامه SR پاسخ نمی\u200Cدهد. یک کانال را از زیر انتخاب کنید.',
+          langBadge: 'به این زبان پخش می\u200Cکند',
+          disclaimer: 'توجه: محتوای این صفحه با هوش مصنوعی ترجمه شده و توسط انسان تأیید نشده است.',
+          built_by: 'ساخته شده توسط', source: 'کد منبع در GitHub',
+          p1: 'اخبار و فرهنگ', p2: 'کلاسیک و جاز', p3: 'پاپ و سرگرمی',
+          p6: 'راک و آلترناتیو', ekotdirekt: 'پخش\u200Cهای خبری', dingata: 'هیپ\u200Cهاپ و سول',
+          p4plus: 'سرگرمی', p4digi: 'دیجیتال', knattekanalen: 'کانال کودکان',
+          sameradion: 'رادیوی سامی', finska: 'رادیوی سوئد به فنلاندی',
+        }
+      },
+      so: {
+        name: 'Soomaali', dir: 'ltr', channelId: null,
+        s: {
+          wordmark: 'Raadiyaha Sweden \u2014 Toos',
+          idle: 'Dooro kanaal',
+          offline: 'offline', live: 'toos', loading: 'soo dejinaya', paused: 'joojiyey', error: 'khalad',
+          national: 'Kanaalada qaranka', special: 'Kanaalada kale', local: 'Kanaalada maxalliga P4',
+          intro: 'Dhageyso Raadiyaha Sweden si toos ah browser-kaaga \u2014 waxay u shaqeysaa xitaa marka <strong>sverigesradio.se hoos u dhacdo</strong> ama app-ka SR aanuu jawabin. Dooro kanaal hoos.',
+          langBadge: 'Waxay ku baahisaa luqaddan',
+          disclaimer: 'Ogeysiis: Waxa ku jira boggan waxa lagu tarjumay AI-ga mana eegna qof bini-aadmiga ah.',
+          built_by: 'Dhisay', source: 'Koodhka asalka ah GitHub',
+          p1: 'Wararka & dhaqanka', p2: 'Klasikada & jazz', p3: 'Pop & madadaalo',
+          p6: 'Rock & beddelka', ekotdirekt: 'Warbaahinta tooska', dingata: 'Hip-hop & soul',
+          p4plus: 'Madadaalo', p4digi: 'Dhijitaal', knattekanalen: 'Kanaalka carruurta',
+          sameradion: 'Raadiyaha Sámi', finska: 'Raadiyaha Sweden Faransiis',
+        }
+      },
+    };
+
+    // ── Channel data ───────────────────────────────────────────
     const NATIONAL = [
-      { id: 'p1',  name: 'P1', sub: 'Nyheter & kultur' },
-      { id: 'p2',  name: 'P2', sub: 'Klassiskt & jazz' },
-      { id: 'p3',  name: 'P3', sub: 'Pop & underhållning' },
-      { id: 'p6',  name: 'P6', sub: 'Rock & alternativt' },
+      { id: 'p1', name: 'P1' }, { id: 'p2', name: 'P2' },
+      { id: 'p3', name: 'P3' }, { id: 'p6', name: 'P6' },
     ];
-
     const SPECIAL = [
-      { id: 'ekotdirekt',   name: 'Ekot direkt',      sub: 'Nyhetssändningar' },
-      { id: 'dingata',      name: 'P3 Din gata',       sub: 'Hiphop & soul' },
-      { id: 'p4plus',       name: 'P4 Plus',           sub: 'Underhållning' },
-      { id: 'p4digi',       name: 'P4 Digital',        sub: 'Digital', noHigh: true },
-      { id: 'knattekanalen',name: 'Knattekanalen',     sub: 'Radioapans barnkanal' },
-      { id: 'sameradion',   name: 'Sameradion',        sub: 'Samisk radio' },
-      { id: 'finska',       name: 'SR Finska',         sub: 'Sveriges Radio Finska' },
+      { id: 'ekotdirekt',    name: 'Ekot direkt' },
+      { id: 'dingata',       name: 'P3 Din gata' },
+      { id: 'p4plus',        name: 'P4 Plus' },
+      { id: 'p4digi',        name: 'P4 Digital', noHigh: true },
+      { id: 'knattekanalen', name: 'Knattekanalen' },
+      { id: 'sameradion',    name: 'Sameradion' },
+      { id: 'finska',        name: 'SR Finska' },
     ];
-
     const LOCAL = [
-      { id: 'p4blek',  name: 'P4 Blekinge' },
-      { id: 'p4dala',  name: 'P4 Dalarna' },
-      { id: 'p4gotl',  name: 'P4 Gotland' },
-      { id: 'p4gavl',  name: 'P4 Gävleborg' },
-      { id: 'p4gbg',   name: 'P4 Göteborg' },
-      { id: 'p4hall',  name: 'P4 Halland' },
-      { id: 'p4jmtl',  name: 'P4 Jämtland' },
-      { id: 'p4jkpg',  name: 'P4 Jönköping' },
-      { id: 'p4kalm',  name: 'P4 Kalmar' },
-      { id: 'p4krist', name: 'P4 Kristianstad' },
-      { id: 'p4kron',  name: 'P4 Kronoberg' },
-      { id: 'p4malm',  name: 'P4 Malmöhus' },
-      { id: 'p4nbtn',  name: 'P4 Norrbotten' },
-      { id: 'p4sju',   name: 'P4 Sjuhärad' },
-      { id: 'p4skbg',  name: 'P4 Skaraborg' },
-      { id: 'p4sth',   name: 'P4 Stockholm' },
-      { id: 'p4sorm',  name: 'P4 Sörmland' },
-      { id: 'p4uppl',  name: 'P4 Uppland' },
-      { id: 'p4vrml',  name: 'P4 Värmland' },
-      { id: 'p4vast',  name: 'P4 Väst' },
-      { id: 'p4vbtn',  name: 'P4 Västerbotten' },
-      { id: 'p4vnrl',  name: 'P4 Västernorrland' },
-      { id: 'p4vstm',  name: 'P4 Västmanland' },
-      { id: 'p4oreb',  name: 'P4 Örebro' },
-      { id: 'p4ostg',  name: 'P4 Östergötland' },
+      { id: 'p4blek', name: 'P4 Blekinge' }, { id: 'p4dala', name: 'P4 Dalarna' },
+      { id: 'p4gotl', name: 'P4 Gotland' },  { id: 'p4gavl', name: 'P4 Gävleborg' },
+      { id: 'p4gbg',  name: 'P4 Göteborg' }, { id: 'p4hall', name: 'P4 Halland' },
+      { id: 'p4jmtl', name: 'P4 Jämtland' }, { id: 'p4jkpg', name: 'P4 Jönköping' },
+      { id: 'p4kalm', name: 'P4 Kalmar' },   { id: 'p4krist', name: 'P4 Kristianstad' },
+      { id: 'p4kron', name: 'P4 Kronoberg' }, { id: 'p4malm', name: 'P4 Malmöhus' },
+      { id: 'p4nbtn', name: 'P4 Norrbotten' }, { id: 'p4sju', name: 'P4 Sjuhärad' },
+      { id: 'p4skbg', name: 'P4 Skaraborg' }, { id: 'p4sth', name: 'P4 Stockholm' },
+      { id: 'p4sorm', name: 'P4 Sörmland' },  { id: 'p4uppl', name: 'P4 Uppland' },
+      { id: 'p4vrml', name: 'P4 Värmland' },  { id: 'p4vast', name: 'P4 Väst' },
+      { id: 'p4vbtn', name: 'P4 Västerbotten' }, { id: 'p4vnrl', name: 'P4 Västernorrland' },
+      { id: 'p4vstm', name: 'P4 Västmanland' },  { id: 'p4oreb', name: 'P4 Örebro' },
+      { id: 'p4ostg', name: 'P4 Östergötland' },
     ];
 
-    // ── State ───────────────────────────────────────────────────
+    // ── DOM refs ───────────────────────────────────────────────
     const audio     = document.getElementById('audio');
     const playBtn   = document.getElementById('playBtn');
     const playIcon  = document.getElementById('playIcon');
@@ -589,42 +831,43 @@
     const vu        = document.getElementById('vu');
     const volSlider = document.getElementById('volSlider');
 
-    let current  = null;
-    let quality  = '128';
+    // ── State ──────────────────────────────────────────────────
+    let current = null;
+    let quality = '128';
+    let lang    = localStorage.getItem('sr-lang') || 'sv';
 
     const ICONS = {
       play:  '<path d="M8 5v14l11-7z"/>',
       pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
     };
 
-    // ── URL builder ─────────────────────────────────────────────
+    // ── URL builder ────────────────────────────────────────────
     function streamUrl(ch, q) {
       const id = ch.id;
       if (q === '96')   return `https://live1.sr.se/${id}-mp3-96`;
       if (q === '32')   return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-32`;
       if (q === '320')  return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-320`;
-      if (q === 'flac') return id === 'p2' ? `https://live1.sr.se/p2-flac` : `https://live1.sr.se/${id}-aac-320`;
+      if (q === 'flac') return id === 'p2' ? 'https://live1.sr.se/p2-flac' : `https://live1.sr.se/${id}-aac-320`;
       return `https://live1.sr.se/${id}-aac-128`;
     }
 
-    // ── Render ──────────────────────────────────────────────────
+    // ── Render channels ────────────────────────────────────────
     function renderChannel(ch, container, isNational) {
       const btn = document.createElement('button');
       btn.className = 'ch-btn';
       btn.dataset.id = ch.id;
-
+      const sub = LANGS.sv.s[ch.id] || '';
       if (isNational) {
         btn.innerHTML = `
           <span class="ch-name-national">${ch.name}</span>
-          ${ch.sub ? `<span class="ch-sub">${ch.sub}</span>` : ''}
-        `;
+          <span class="ch-sub" data-ch-sub="${ch.id}">${sub}</span>
+          <span class="ch-lang-badge" id="badge-${ch.id}"></span>`;
       } else {
         btn.innerHTML = `
           <span class="ch-name">${ch.name}</span>
-          ${ch.sub ? `<span class="ch-sub">${ch.sub}</span>` : ''}
-        `;
+          <span class="ch-sub" data-ch-sub="${ch.id}">${sub}</span>
+          <span class="ch-lang-badge" id="badge-${ch.id}"></span>`;
       }
-
       btn.addEventListener('click', () => select(ch, btn));
       container.appendChild(btn);
     }
@@ -632,48 +875,41 @@
     const natGrid  = document.getElementById('grid-national');
     const specGrid = document.getElementById('grid-special');
     const locGrid  = document.getElementById('grid-local');
-
     NATIONAL.forEach(ch => renderChannel(ch, natGrid, true));
     SPECIAL.forEach(ch  => renderChannel(ch, specGrid, false));
     LOCAL.forEach(ch    => renderChannel(ch, locGrid, false));
 
-    // ── Select channel ──────────────────────────────────────────
+    // ── Select channel ─────────────────────────────────────────
     function select(ch, btn) {
       document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       current = ch;
       nameEl.textContent = ch.name;
       nameEl.classList.remove('idle');
-      subEl.textContent = ch.sub || '';
+      subEl.textContent = LANGS[lang].s[ch.id] || '';
       playBtn.disabled = false;
-
       audio.src = streamUrl(ch, quality);
       audio.volume = parseFloat(volSlider.value);
       audio.play().catch(() => {});
     }
 
-    // ── Playback state ──────────────────────────────────────────
+    // ── Playback state ─────────────────────────────────────────
     function setState(state) {
+      const s = LANGS[lang].s;
       dot.className = 'dot';
       vu.classList.remove('active');
       playIcon.innerHTML = ICONS.play;
-
       if (state === 'playing') {
         dot.classList.add('live');
-        label.textContent = 'live';
+        label.textContent = s.live;
         vu.classList.add('active');
         playIcon.innerHTML = ICONS.pause;
       } else if (state === 'loading') {
         dot.classList.add('loading');
-        label.textContent = 'laddar';
-      } else if (state === 'error') {
-        label.textContent = 'fel';
-      } else if (state === 'paused') {
-        label.textContent = 'pausad';
-      } else {
-        label.textContent = 'offline';
-      }
+        label.textContent = s.loading;
+      } else if (state === 'error')  { label.textContent = s.error;
+      } else if (state === 'paused') { label.textContent = s.paused;
+      } else                         { label.textContent = s.offline; }
     }
 
     audio.addEventListener('playing', () => setState('playing'));
@@ -687,17 +923,13 @@
       if (audio.paused) {
         if (!audio.src) audio.src = streamUrl(current, quality);
         audio.play().catch(() => {});
-      } else {
-        audio.pause();
-      }
+      } else { audio.pause(); }
     });
 
-    // ── Volume ──────────────────────────────────────────────────
-    volSlider.addEventListener('input', () => {
-      audio.volume = parseFloat(volSlider.value);
-    });
+    // ── Volume ─────────────────────────────────────────────────
+    volSlider.addEventListener('input', () => { audio.volume = parseFloat(volSlider.value); });
 
-    // ── Quality ─────────────────────────────────────────────────
+    // ── Quality ────────────────────────────────────────────────
     document.querySelectorAll('.q-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
@@ -710,6 +942,72 @@
         }
       });
     });
+
+    // ── Set language ───────────────────────────────────────────
+    function setLang(code) {
+      lang = code;
+      localStorage.setItem('sr-lang', code);
+      const L = LANGS[code], s = L.s;
+
+      document.documentElement.lang = code;
+      document.documentElement.dir  = L.dir;
+
+      document.getElementById('i18n-wordmark').textContent = s.wordmark;
+      document.getElementById('i18n-national').textContent = s.national;
+      document.getElementById('i18n-special').textContent  = s.special;
+      document.getElementById('i18n-local').textContent    = s.local;
+      document.getElementById('i18n-built-by').textContent = s.built_by;
+      document.getElementById('i18n-source').textContent   = s.source;
+      document.querySelector('.intro').innerHTML = s.intro;
+
+      if (!current) {
+        nameEl.textContent = s.idle;
+        nameEl.classList.add('idle');
+      } else {
+        subEl.textContent = s[current.id] || '';
+      }
+
+      document.querySelectorAll('[data-ch-sub]').forEach(el => {
+        const v = s[el.dataset.chSub];
+        if (v !== undefined) el.textContent = v;
+      });
+
+      document.querySelectorAll('.ch-lang-badge').forEach(el => {
+        el.style.display = 'none'; el.textContent = '';
+      });
+      if (L.channelId) {
+        const badge = document.getElementById('badge-' + L.channelId);
+        if (badge) { badge.textContent = s.langBadge; badge.style.display = 'inline-block'; }
+      }
+
+      const disc  = document.getElementById('disclaimer');
+      const lines = document.getElementById('disclaimerLines');
+      if (code === 'sv') {
+        disc.style.display = 'none';
+      } else {
+        const SV = 'Observera: Innehållet på den här sidan har översatts med AI och har inte granskats av en människa.';
+        const EN = 'Note: This page\u2019s content has been translated using AI and has not been reviewed by a human.';
+        const parts = [`<p>${SV}</p>`];
+        if (code !== 'en') parts.push(`<p>${EN}</p>`);
+        if (s.disclaimer)  parts.push(`<p>${s.disclaimer}</p>`);
+        lines.innerHTML = parts.join('');
+        disc.style.display = '';
+      }
+
+      setState(current ? (audio.paused ? 'paused' : 'playing') : 'offline');
+    }
+
+    // ── Language selector ──────────────────────────────────────
+    const langSel = document.getElementById('langSel');
+    langSel.value = lang;
+    langSel.addEventListener('change', e => setLang(e.target.value));
+
+    document.getElementById('disclaimerClose').addEventListener('click', () => {
+      document.getElementById('disclaimer').style.display = 'none';
+    });
+
+    // ── Init ───────────────────────────────────────────────────
+    setLang(lang);
   </script>
 </body>
 </html>
