@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SR Live</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,700;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #090806;
+      --surface:    #131009;
+      --surface2:   #1C1810;
+      --amber:      #C8820A;
+      --amber-hi:   #EDA020;
+      --amber-lo:   #6B4408;
+      --amber-glow: rgba(200,130,10,0.12);
+      --cream:      #E8D49A;
+      --text:       #B89858;
+      --text-dim:   #5A4420;
+      --green:      #52C060;
+      --border:     #221A0C;
+      --border-hi:  #3A2C14;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle vignette */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ─── HEADER ─────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 32px rgba(0,0,0,0.6);
+    }
+
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.25rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    /* Station info */
+    .station-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      min-width: 0;
+    }
+
+    .station-text { min-width: 0; }
+
+    .wordmark {
+      font-size: 0.55rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+
+    .station-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--amber-hi);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.3s;
+    }
+
+    .station-name.idle {
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .station-sub {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      margin-top: 0.2rem;
+      height: 0.9em;
+      transition: opacity 0.3s;
+    }
+
+    /* VU Bars */
+    .vu {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .vu-bar {
+      width: 4px;
+      background: var(--amber-lo);
+      border-radius: 2px 2px 0 0;
+      height: 4px;
+      transition: height 0.1s, background 0.1s;
+    }
+
+    .vu.active .vu-bar:nth-child(1) { animation: vu1 0.75s ease-in-out infinite alternate; }
+    .vu.active .vu-bar:nth-child(2) { animation: vu1 0.55s ease-in-out infinite alternate 0.12s; }
+    .vu.active .vu-bar:nth-child(3) { animation: vu1 0.95s ease-in-out infinite alternate 0.24s; }
+    .vu.active .vu-bar:nth-child(4) { animation: vu1 0.65s ease-in-out infinite alternate 0.08s; }
+    .vu.active .vu-bar:nth-child(5) { animation: vu1 0.85s ease-in-out infinite alternate 0.18s; }
+    .vu.active .vu-bar:nth-child(6) { animation: vu1 0.70s ease-in-out infinite alternate 0.30s; }
+    .vu.active .vu-bar:nth-child(7) { animation: vu1 1.10s ease-in-out infinite alternate 0.05s; }
+
+    @keyframes vu1 {
+      0%   { height: 3px;  background: var(--amber-lo); }
+      60%  { height: 16px; background: var(--amber); }
+      100% { height: 28px; background: var(--amber-hi); }
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    /* Status */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      flex-shrink: 0;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .dot.live {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green), 0 0 16px rgba(82,192,96,0.3);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    .dot.loading {
+      background: var(--amber);
+      animation: spin-dot 1s linear infinite;
+    }
+
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    @keyframes spin-dot { 0% { box-shadow: 0 0 4px var(--amber); } 50% { box-shadow: 0 0 10px var(--amber); } 100% { box-shadow: 0 0 4px var(--amber); } }
+
+    .status-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* Volume */
+    .vol-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .vol-icon { color: var(--text-dim); width: 14px; height: 14px; flex-shrink: 0; }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 72px;
+      height: 2px;
+      background: var(--border-hi);
+      outline: none;
+      border-radius: 1px;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--amber);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: var(--amber-hi);
+      transform: scale(1.2);
+    }
+
+    /* Quality */
+    .quality {
+      display: flex;
+      border: 1px solid var(--border-hi);
+      overflow: hidden;
+    }
+
+    .q-btn {
+      padding: 0.35rem 0.55rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.05em;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+      border-right: 1px solid var(--border-hi);
+    }
+
+    .q-btn:last-child { border-right: none; }
+
+    .q-btn:hover { color: var(--text); background: var(--surface2); }
+
+    .q-btn.active {
+      background: var(--amber-glow);
+      color: var(--amber-hi);
+    }
+
+    /* Play button */
+    .play-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1.5px solid var(--amber-lo);
+      background: transparent;
+      color: var(--amber);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .play-btn:not(:disabled):hover {
+      border-color: var(--amber);
+      background: var(--amber-glow);
+      color: var(--amber-hi);
+      box-shadow: 0 0 20px var(--amber-glow);
+    }
+
+    .play-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .play-btn svg { width: 18px; height: 18px; }
+
+    /* ─── MAIN ────────────────────────────────── */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    .section { margin-bottom: 3rem; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Channel grids */
+    .grid {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .grid-national { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    .grid-special  { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .grid-local    { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+
+    /* Channel button */
+    .ch-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.9rem 1.1rem;
+      text-align: left;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .ch-btn::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--amber);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.2s ease;
+    }
+
+    .ch-btn:hover { border-color: var(--amber-lo); color: var(--cream); }
+    .ch-btn:hover::after { transform: scaleY(1); }
+
+    .ch-btn.active {
+      border-color: var(--amber);
+      background: var(--amber-glow);
+      color: var(--amber-hi);
+    }
+
+    .ch-btn.active::after { transform: scaleY(1); }
+
+    .ch-name-national {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .ch-name {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+      letter-spacing: 0.02em;
+    }
+
+    .ch-sub {
+      display: block;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── FOOTER ──────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 1.5rem 2rem;
+      color: var(--text-dim);
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 720px) {
+      .header-inner {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+      }
+
+      .controls { flex-wrap: wrap; gap: 0.75rem; }
+      .station-name { font-size: 1.7rem; }
+
+      main { padding: 1.5rem 1.25rem 4rem; }
+
+      .grid-national { grid-template-columns: repeat(2, 1fr); }
+      .grid-special  { grid-template-columns: repeat(2, 1fr); }
+      .grid-local    { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 400px) {
+      .grid-national,
+      .grid-special,
+      .grid-local { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <!-- Station display -->
+      <div class="station-info">
+        <div class="station-text">
+          <div class="wordmark">Sveriges Radio &mdash; Live</div>
+          <div class="station-name idle" id="stationName">Välj en kanal</div>
+          <div class="station-sub" id="stationSub"></div>
+        </div>
+        <div class="vu" id="vu">
+          <div class="vu-bar"></div>
+          <div class="vu-bar"></div>
+          <div class="vu-bar"></div>
+          <div class="vu-bar"></div>
+          <div class="vu-bar"></div>
+          <div class="vu-bar"></div>
+          <div class="vu-bar"></div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="status">
+          <div class="dot" id="dot"></div>
+          <span class="status-label" id="statusLabel">offline</span>
+        </div>
+
+        <div class="vol-wrap">
+          <svg class="vol-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+          </svg>
+          <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.85">
+        </div>
+
+        <div class="quality">
+          <button class="q-btn" data-q="32">32</button>
+          <button class="q-btn active" data-q="128">128</button>
+          <button class="q-btn" data-q="96">96</button>
+          <button class="q-btn" data-q="320">320</button>
+        </div>
+
+        <button class="play-btn" id="playBtn" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-head">
+        <span class="section-label">Rikskanaler</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid grid-national" id="grid-national"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="section-label">Övriga kanaler</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid grid-special" id="grid-special"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="section-label">Lokala P4-kanaler</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid grid-local" id="grid-local"></div>
+    </section>
+  </main>
+
+  <footer>Inofficiell SR-spelare &mdash; Strömmar via Sveriges Radios publika direktlänkar</footer>
+
+  <audio id="audio" preload="none"></audio>
+
+  <script>
+    // ── Data ────────────────────────────────────────────────────
+    const NATIONAL = [
+      { id: 'p1',  name: 'P1', sub: 'Nyheter & kultur' },
+      { id: 'p2',  name: 'P2', sub: 'Klassiskt & jazz' },
+      { id: 'p3',  name: 'P3', sub: 'Pop & underhållning' },
+      { id: 'p6',  name: 'P6', sub: 'Rock & alternativt' },
+    ];
+
+    const SPECIAL = [
+      { id: 'ekotdirekt',   name: 'Ekot direkt',      sub: 'Nyhetssändningar' },
+      { id: 'dingata',      name: 'P3 Din gata',       sub: 'Hiphop & soul' },
+      { id: 'p4plus',       name: 'P4 Plus',           sub: 'Underhållning' },
+      { id: 'p4digi',       name: 'P4 Digital',        sub: 'Digital', noHigh: true },
+      { id: 'knattekanalen',name: 'Knattekanalen',     sub: 'Radioapans barnkanal' },
+      { id: 'sameradion',   name: 'Sameradion',        sub: 'Samisk radio' },
+      { id: 'finska',       name: 'SR Finska',         sub: 'Sveriges Radio Finska' },
+    ];
+
+    const LOCAL = [
+      { id: 'p4blek',  name: 'P4 Blekinge' },
+      { id: 'p4dala',  name: 'P4 Dalarna' },
+      { id: 'p4gotl',  name: 'P4 Gotland' },
+      { id: 'p4gavl',  name: 'P4 Gävleborg' },
+      { id: 'p4gbg',   name: 'P4 Göteborg' },
+      { id: 'p4hall',  name: 'P4 Halland' },
+      { id: 'p4jmtl',  name: 'P4 Jämtland' },
+      { id: 'p4jkpg',  name: 'P4 Jönköping' },
+      { id: 'p4kalm',  name: 'P4 Kalmar' },
+      { id: 'p4krist', name: 'P4 Kristianstad' },
+      { id: 'p4kron',  name: 'P4 Kronoberg' },
+      { id: 'p4malm',  name: 'P4 Malmöhus' },
+      { id: 'p4nbtn',  name: 'P4 Norrbotten' },
+      { id: 'p4sju',   name: 'P4 Sjuhärad' },
+      { id: 'p4skbg',  name: 'P4 Skaraborg' },
+      { id: 'p4sth',   name: 'P4 Stockholm' },
+      { id: 'p4sorm',  name: 'P4 Sörmland' },
+      { id: 'p4uppl',  name: 'P4 Uppland' },
+      { id: 'p4vrml',  name: 'P4 Värmland' },
+      { id: 'p4vast',  name: 'P4 Väst' },
+      { id: 'p4vbtn',  name: 'P4 Västerbotten' },
+      { id: 'p4vnrl',  name: 'P4 Västernorrland' },
+      { id: 'p4vstm',  name: 'P4 Västmanland' },
+      { id: 'p4oreb',  name: 'P4 Örebro' },
+      { id: 'p4ostg',  name: 'P4 Östergötland' },
+    ];
+
+    // ── State ───────────────────────────────────────────────────
+    const audio     = document.getElementById('audio');
+    const playBtn   = document.getElementById('playBtn');
+    const playIcon  = document.getElementById('playIcon');
+    const nameEl    = document.getElementById('stationName');
+    const subEl     = document.getElementById('stationSub');
+    const dot       = document.getElementById('dot');
+    const label     = document.getElementById('statusLabel');
+    const vu        = document.getElementById('vu');
+    const volSlider = document.getElementById('volSlider');
+
+    let current  = null;
+    let quality  = '128';
+
+    const ICONS = {
+      play:  '<path d="M8 5v14l11-7z"/>',
+      pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
+    };
+
+    // ── URL builder ─────────────────────────────────────────────
+    function streamUrl(ch, q) {
+      const id = ch.id;
+      if (q === '96')  return `https://live1.sr.se/${id}-mp3-96`;
+      if (q === '32')  return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-32`;
+      if (q === '320') return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-320`;
+      return `https://live1.sr.se/${id}-aac-128`;
+    }
+
+    // ── Render ──────────────────────────────────────────────────
+    function renderChannel(ch, container, isNational) {
+      const btn = document.createElement('button');
+      btn.className = 'ch-btn';
+      btn.dataset.id = ch.id;
+
+      if (isNational) {
+        btn.innerHTML = `
+          <span class="ch-name-national">${ch.name}</span>
+          ${ch.sub ? `<span class="ch-sub">${ch.sub}</span>` : ''}
+        `;
+      } else {
+        btn.innerHTML = `
+          <span class="ch-name">${ch.name}</span>
+          ${ch.sub ? `<span class="ch-sub">${ch.sub}</span>` : ''}
+        `;
+      }
+
+      btn.addEventListener('click', () => select(ch, btn));
+      container.appendChild(btn);
+    }
+
+    const natGrid  = document.getElementById('grid-national');
+    const specGrid = document.getElementById('grid-special');
+    const locGrid  = document.getElementById('grid-local');
+
+    NATIONAL.forEach(ch => renderChannel(ch, natGrid, true));
+    SPECIAL.forEach(ch  => renderChannel(ch, specGrid, false));
+    LOCAL.forEach(ch    => renderChannel(ch, locGrid, false));
+
+    // ── Select channel ──────────────────────────────────────────
+    function select(ch, btn) {
+      document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      current = ch;
+      nameEl.textContent = ch.name;
+      nameEl.classList.remove('idle');
+      subEl.textContent = ch.sub || '';
+      playBtn.disabled = false;
+
+      audio.src = streamUrl(ch, quality);
+      audio.volume = parseFloat(volSlider.value);
+      audio.play().catch(() => {});
+    }
+
+    // ── Playback state ──────────────────────────────────────────
+    function setState(state) {
+      dot.className = 'dot';
+      vu.classList.remove('active');
+      playIcon.innerHTML = ICONS.play;
+
+      if (state === 'playing') {
+        dot.classList.add('live');
+        label.textContent = 'live';
+        vu.classList.add('active');
+        playIcon.innerHTML = ICONS.pause;
+      } else if (state === 'loading') {
+        dot.classList.add('loading');
+        label.textContent = 'laddar';
+      } else if (state === 'error') {
+        label.textContent = 'fel';
+      } else if (state === 'paused') {
+        label.textContent = 'pausad';
+      } else {
+        label.textContent = 'offline';
+      }
+    }
+
+    audio.addEventListener('playing', () => setState('playing'));
+    audio.addEventListener('pause',   () => setState(current ? 'paused' : 'offline'));
+    audio.addEventListener('waiting', () => setState('loading'));
+    audio.addEventListener('stalled', () => setState('loading'));
+    audio.addEventListener('error',   () => setState('error'));
+
+    playBtn.addEventListener('click', () => {
+      if (!current) return;
+      if (audio.paused) {
+        if (!audio.src) audio.src = streamUrl(current, quality);
+        audio.play().catch(() => {});
+      } else {
+        audio.pause();
+      }
+    });
+
+    // ── Volume ──────────────────────────────────────────────────
+    volSlider.addEventListener('input', () => {
+      audio.volume = parseFloat(volSlider.value);
+    });
+
+    // ── Quality ─────────────────────────────────────────────────
+    document.querySelectorAll('.q-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        quality = btn.dataset.q;
+        if (current) {
+          const wasPlaying = !audio.paused;
+          audio.src = streamUrl(current, quality);
+          if (wasPlaying) audio.play().catch(() => {});
+        }
+      });
+    });
+  </script>
+</body>
+</html>
