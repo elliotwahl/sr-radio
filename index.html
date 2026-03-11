@@ -481,6 +481,54 @@
     }
     .disclaimer-close:hover { background: rgba(0,0,0,0.07); }
 
+    /* ─── SETTINGS ──────────────────────────── */
+    .settings-wrap { position: relative; }
+
+    .settings-btn {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+    .settings-btn:hover,
+    .settings-btn.open {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+    .settings-btn svg { width: 16px; height: 16px; }
+
+    .settings-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 200;
+      min-width: 200px;
+    }
+    .settings-panel.open { display: block; }
+
+    .settings-group + .settings-group { margin-top: 1rem; }
+
+    .settings-group-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
     /* ─── CHANNEL LANG BADGE ─────────────────── */
     .ch-lang-badge {
       display: none;
@@ -556,26 +604,38 @@
           <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.85">
         </div>
 
-        <div class="quality">
-          <button class="q-btn" data-q="32">32</button>
-          <button class="q-btn active" data-q="128">128</button>
-          <button class="q-btn" data-q="96">96</button>
-          <button class="q-btn" data-q="320">320</button>
-          <button class="q-btn" data-q="flac" title="Endast tillgänglig för P2">FLAC</button>
+        <div class="settings-wrap">
+          <button class="settings-btn" id="settingsBtn" aria-label="Inställningar">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a6.99 6.99 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </button>
+          <div class="settings-panel" id="settingsPanel">
+            <div class="settings-group">
+              <div class="settings-group-label">Kvalitet</div>
+              <div class="quality">
+                <button class="q-btn" data-q="32">32</button>
+                <button class="q-btn active" data-q="128">128</button>
+                <button class="q-btn" data-q="96">96</button>
+                <button class="q-btn" data-q="320">320</button>
+                <button class="q-btn" data-q="flac" title="Endast tillgänglig för P2">FLAC</button>
+              </div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Språk</div>
+              <select id="langSel" class="lang-sel" aria-label="Välj språk / Select language">
+                <option value="sv">Svenska</option>
+                <option value="en">English</option>
+                <option value="fi">Suomi</option>
+                <option value="se">Davvisámegiella</option>
+                <option value="fit">Meänkieli</option>
+                <option value="rom">Romani</option>
+                <option value="yi">ייִדיש</option>
+                <option value="ar">العربية</option>
+                <option value="fa">فارسی</option>
+                <option value="so">Soomaali</option>
+              </select>
+            </div>
+          </div>
         </div>
-
-        <select id="langSel" class="lang-sel" aria-label="Välj språk / Select language">
-          <option value="sv">Svenska</option>
-          <option value="en">English</option>
-          <option value="fi">Suomi</option>
-          <option value="se">Davvisámegiella</option>
-          <option value="fit">Meänkieli</option>
-          <option value="rom">Romani</option>
-          <option value="yi">ייִדיש</option>
-          <option value="ar">العربية</option>
-          <option value="fa">فارسی</option>
-          <option value="so">Soomaali</option>
-        </select>
 
         <button class="play-btn" id="playBtn" disabled>
           <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon">
@@ -637,7 +697,7 @@
         s: {
           wordmark: 'Sveriges Radio \u2014 Live',
           idle: 'Välj en kanal',
-          offline: 'offline', live: 'live', loading: 'laddar', paused: 'pausad', error: 'fel',
+          offline: 'Inget spelas', live: 'live', loading: 'laddar', paused: 'pausad', error: 'fel',
           national: 'Rikskanaler', special: 'Övriga kanaler', local: 'Lokala P4-kanaler',
           intro: 'Lyssna på Sveriges Radio live direkt i webbläsaren \u2014 fungerar även när <strong>sverigesradio.se är nere</strong> eller SR-appen inte svarar. Välj kanal nedan.',
           langBadge: 'Sänder på detta språk', disclaimer: null,
@@ -653,7 +713,7 @@
         s: {
           wordmark: 'Sveriges Radio \u2014 Live',
           idle: 'Select a channel',
-          offline: 'offline', live: 'live', loading: 'loading', paused: 'paused', error: 'error',
+          offline: 'Nothing playing', live: 'live', loading: 'loading', paused: 'paused', error: 'error',
           national: 'National channels', special: 'Other channels', local: 'Local P4 channels',
           intro: 'Listen to Sveriges Radio live directly in your browser \u2014 works even when <strong>sverigesradio.se is down</strong> or the SR app is not responding. Select a channel below.',
           langBadge: 'Broadcasts in this language',
@@ -670,7 +730,7 @@
         s: {
           wordmark: 'Sveriges Radio \u2014 Suorana',
           idle: 'Valitse kanava',
-          offline: 'offline', live: 'suorana', loading: 'ladataan', paused: 'tauolla', error: 'virhe',
+          offline: 'Ei soi mitään', live: 'suorana', loading: 'ladataan', paused: 'tauolla', error: 'virhe',
           national: 'Valtakunnalliset kanavat', special: 'Muut kanavat', local: 'Paikalliset P4-kanavat',
           intro: 'Kuuntele Sveriges Radiota suorana selaimessasi \u2014 toimii myös kun <strong>sverigesradio.se on alhaalla</strong> tai SR-sovellus ei vastaa. Valitse kanava alta.',
           langBadge: 'Lähettää tällä kielellä',
@@ -687,7 +747,7 @@
         s: {
           wordmark: 'Sveriges Radio \u2014 Njuolga',
           idle: 'Vállje kanála',
-          offline: 'offline', live: 'njuolga', loading: 'loaktá', paused: 'bisuhan', error: 'boasttu',
+          offline: 'Ii mii njuolga', live: 'njuolga', loading: 'loaktá', paused: 'bisuhan', error: 'boasttu',
           national: 'Nationála kanálat', special: 'Eará kanálat', local: 'Báikkálaš P4-kanálat',
           intro: 'Gulan Sveriges Radio njuolga neahttabávttis \u2014 bargá maiddái go <strong>sverigesradio.se ii doaimma</strong> dahje SR-app ii vástidit. Vállje kanála vuolde.',
           langBadge: 'Sádde dán gillii',
@@ -704,7 +764,7 @@
         s: {
           wordmark: 'Sveriges Radio \u2014 Suohraan',
           idle: 'Välithe kanava',
-          offline: 'offline', live: 'suohraan', loading: 'lahataan', paused: 'tauolla', error: 'vikka',
+          offline: 'Ei soo mittää', live: 'suohraan', loading: 'lahataan', paused: 'tauolla', error: 'vikka',
           national: 'Valtakunnaliset kanavat', special: 'Muut kanavat', local: 'Paikalliset P4-kanavat',
           intro: 'Kuuntele Sveriges Radiota suohraan selväimessa \u2014 toimii myös ko <strong>sverigesradio.se oon alhaalla</strong> eli SR-sovellus ei vastaa. Välithe kanava alhaaltha.',
           langBadge: 'Sänttää tälä kielälä',
@@ -721,7 +781,7 @@
         s: {
           wordmark: 'Sveriges Radio \u2014 Živindo',
           idle: 'Čhun kanáli',
-          offline: 'offline', live: 'živindo', loading: 'lovel', paused: 'ačhado', error: 'gaži',
+          offline: 'Či khelel khanchi', live: 'živindo', loading: 'lovel', paused: 'ačhado', error: 'gaži',
           national: 'Nacionálne kanále', special: 'Aver kanále', local: 'Lokálne P4-kanále',
           intro: 'Šun Sveriges Radio živindo ando brauzeri \u2014 khelel vi kana <strong>sverigesradio.se nane šukar</strong> vaj SR-app nane delas duma. Čhun kanáli tele.',
           langBadge: 'Phukavel pe kala čhib',
@@ -738,7 +798,7 @@
         s: {
           wordmark: 'שוועדישן ראַדיאָ \u2014 לייוו',
           idle: 'קלייַב אויס אַ קאַנאַל',
-          offline: 'אָפֿלײַן', live: 'לייוו', loading: 'לאָדן', paused: 'אָפּגעשטעלט', error: 'טעות',
+          offline: 'גאָרנישט שפּילט', live: 'לייוו', loading: 'לאָדן', paused: 'אָפּגעשטעלט', error: 'טעות',
           national: 'נאַציאָנאַלע קאַנאַלן', special: 'אַנדערע קאַנאַלן', local: 'לאָקאַלע P4-קאַנאַלן',
           intro: 'הער שוועדישן ראַדיאָ לייוו גלײַך אין דײַן בלעטערער \u2014 אַרבעט אַפֿילו ווען <strong>sverigesradio.se איז אַראָפּ</strong> אָדער SR-אַפּ ענטפֿערט נישט. קלייַב אויס אַ קאַנאַל אונטן.',
           langBadge: 'שיקט אויף דעם שפּראַך',
@@ -755,7 +815,7 @@
         s: {
           wordmark: 'الراديو السويدي \u2014 بث مباشر',
           idle: 'اختر قناة',
-          offline: 'غير متصل', live: 'مباشر', loading: 'جارٍ التحميل', paused: 'متوقف مؤقتاً', error: 'خطأ',
+          offline: 'لا شيء يُشغَّل', live: 'مباشر', loading: 'جارٍ التحميل', paused: 'متوقف مؤقتاً', error: 'خطأ',
           national: 'القنوات الوطنية', special: 'قنوات أخرى', local: 'قنوات P4 المحلية',
           intro: 'استمع إلى الراديو السويدي مباشرةً في متصفحك \u2014 يعمل حتى عندما <strong>يكون sverigesradio.se معطلاً</strong> أو عندما لا يستجيب تطبيق SR. اختر قناة أدناه.',
           langBadge: 'يبث بهذه اللغة',
@@ -772,7 +832,7 @@
         s: {
           wordmark: 'رادیوی سوئد \u2014 پخش زنده',
           idle: 'یک کانال انتخاب کنید',
-          offline: 'آفلاین', live: 'زنده', loading: 'در حال بارگذاری', paused: 'مکث', error: 'خطا',
+          offline: 'چیزی پخش نمی‌شود', live: 'زنده', loading: 'در حال بارگذاری', paused: 'مکث', error: 'خطا',
           national: 'کانال\u200Cهای ملی', special: 'کانال\u200Cهای دیگر', local: 'کانال\u200Cهای محلی P4',
           intro: 'رادیوی سوئد را مستقیماً در مرورگر خود گوش دهید \u2014 حتی وقتی <strong>sverigesradio.se از دسترس خارج است</strong> یا برنامه SR پاسخ نمی\u200Cدهد. یک کانال را از زیر انتخاب کنید.',
           langBadge: 'به این زبان پخش می\u200Cکند',
@@ -789,7 +849,7 @@
         s: {
           wordmark: 'Raadiyaha Sweden \u2014 Toos',
           idle: 'Dooro kanaal',
-          offline: 'offline', live: 'toos', loading: 'soo dejinaya', paused: 'joojiyey', error: 'khalad',
+          offline: 'Waxba lama daayo', live: 'toos', loading: 'soo dejinaya', paused: 'joojiyey', error: 'khalad',
           national: 'Kanaalada qaranka', special: 'Kanaalada kale', local: 'Kanaalada maxalliga P4',
           intro: 'Dhageyso Raadiyaha Sweden si toos ah browser-kaaga \u2014 waxay u shaqeysaa xitaa marka <strong>sverigesradio.se hoos u dhacdo</strong> ama app-ka SR aanuu jawabin. Dooro kanaal hoos.',
           langBadge: 'Waxay ku baahisaa luqaddan',
@@ -1011,6 +1071,23 @@
 
       setState(current ? (audio.paused ? 'paused' : 'playing') : 'offline');
     }
+
+    // ── Settings toggle ────────────────────────────────────────
+    const settingsBtn   = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+
+    settingsBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = settingsPanel.classList.toggle('open');
+      settingsBtn.classList.toggle('open', open);
+    });
+
+    document.addEventListener('click', e => {
+      if (!settingsBtn.contains(e.target) && !settingsPanel.contains(e.target)) {
+        settingsPanel.classList.remove('open');
+        settingsBtn.classList.remove('open');
+      }
+    });
 
     // ── Language selector ──────────────────────────────────────
     const langSel = document.getElementById('langSel');
