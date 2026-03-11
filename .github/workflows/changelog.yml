@@ -1,0 +1,100 @@
+name: Uppdatera ändringslogg
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  changelog:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generera ändringspost
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          python3 - <<'EOF'
+          import subprocess, os, sys
+          from datetime import date
+
+          before = os.environ.get('BEFORE', '')
+          after  = os.environ.get('AFTER', 'HEAD')
+
+          # Hämta commit-meddelanden sedan förra pushen
+          if not before or before == '0' * 40:
+              result = subprocess.run(
+                  ['git', 'log', '-20', '--pretty=format:%s'],
+                  capture_output=True, text=True
+              )
+          else:
+              result = subprocess.run(
+                  ['git', 'log', f'{before}..{after}', '--pretty=format:%s'],
+                  capture_output=True, text=True
+              )
+
+          commits = [
+              line.strip() for line in result.stdout.splitlines()
+              if line.strip()
+              and '[skip ci]' not in line
+              and 'github-actions' not in line.lower()
+          ]
+
+          if not commits:
+              print("Inga nya commits att logga.")
+              sys.exit(0)
+
+          months = [
+              'januari','februari','mars','april','maj','juni',
+              'juli','augusti','september','oktober','november','december'
+          ]
+          today = date.today()
+          date_str = f"{today.day} {months[today.month - 1]} {today.year}"
+
+          items = '\n'.join(f'        <li>{c}</li>' for c in commits)
+          entry = (
+              f'      <article class="entry">\n'
+              f'        <div class="entry-date">{date_str}</div>\n'
+              f'        <ul class="entry-list">\n'
+              f'{items}\n'
+              f'        </ul>\n'
+              f'      </article>\n'
+          )
+
+          with open('changelog.html', 'r', encoding='utf-8') as f:
+              content = f.read()
+
+          marker = '<!-- CHANGELOG_ENTRIES -->'
+          if marker not in content:
+              print("Markör saknas i changelog.html")
+              sys.exit(1)
+
+          # Ta bort platshållartexten om den finns
+          content = content.replace(
+              '\n      <p class="empty">Inga poster ännu.</p>', ''
+          )
+          content = content.replace(marker, marker + '\n' + entry)
+
+          with open('changelog.html', 'w', encoding='utf-8') as f:
+              f.write(content)
+
+          print(f"Lade till {len(commits)} poster i ändringsloggen.")
+          EOF
+
+      - name: Commit och pusha
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet changelog.html || (
+            git add changelog.html &&
+            git commit -m "Uppdatera ändringslogg [skip ci]" &&
+            git push
+          )

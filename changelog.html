@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ändringslogg – Vevradion</title>
+  <meta name="description" content="Ändringar och uppdateringar för Vevradion.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sr.liot.se/changelog">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #F0EFEB;
+      --surface:      #FFFFFF;
+      --surface2:     #F5F4F0;
+      --border:       #DDDBD5;
+      --text:         #1A1A1A;
+      --text-muted:   #6B6860;
+      --accent:       #0056A8;
+      --accent-light: #E8F0FA;
+      --accent-hover: #003F80;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .header-inner {
+      max-width: 800px; margin: 0 auto;
+      padding: 1.1rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem;
+    }
+
+    .wordmark {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); text-decoration: none;
+    }
+    .wordmark:hover { color: var(--accent); }
+    .header-sep { color: var(--border); }
+    .header-title {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    main { max-width: 800px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
+
+    .lead { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 3rem; line-height: 1.6; }
+
+    /* Timeline */
+    .timeline { position: relative; }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 6px; bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .entry {
+      position: relative;
+      padding: 0 0 2.5rem 2rem;
+    }
+
+    .entry::before {
+      content: '';
+      position: absolute;
+      left: -4px; top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+
+    .entry-date {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .entry-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .entry-list li {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text);
+      padding-left: 1.1rem;
+      position: relative;
+    }
+
+    .entry-list li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    .empty {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      font-style: italic;
+      padding-left: 2rem;
+    }
+
+    footer {
+      text-align: center; padding: 1.5rem 2rem;
+      color: var(--text-muted); font-size: 0.78rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+
+    .legal {
+      text-align: center; padding: 0.75rem 2rem 1.5rem;
+      color: var(--text-muted); font-size: 0.7rem; opacity: 0.7;
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 2rem 1.25rem 4rem; }
+      h1 { font-size: 1.5rem; }
+      .header-inner { padding: 1rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a class="wordmark" href="/">Vevradion</a>
+      <span class="header-sep">/</span>
+      <span class="header-title">Ändringslogg</span>
+    </div>
+  </header>
+
+  <main>
+    <h1>Ändringslogg</h1>
+    <p class="lead">Uppdateras automatiskt vid varje ny release.</p>
+
+    <div class="timeline" id="changelog">
+<!-- CHANGELOG_ENTRIES -->
+      <p class="empty">Inga poster ännu.</p>
+    </div>
+  </main>
+
+  <footer>
+    <a href="/">Tillbaka till spelaren</a>
+    &mdash;
+    <a href="/om">Om Vevradion</a>
+    &mdash;
+    <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener">Källkod på GitHub</a>
+  </footer>
+  <p class="legal">Detta projekt är inte affilierat med Sveriges Radio.</p>
+
+</body>
+</html>
