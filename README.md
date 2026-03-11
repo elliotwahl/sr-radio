@@ -22,7 +22,7 @@ Fyra kvalitetsnivåer väljs i spelaren:
 
 ## Teknisk stack
 
-En enda HTML-fil utan externa beroenden eller byggsteg. Hostas statiskt via GitHub Pages.
+En enda HTML-fil utan externa beroenden eller byggsteg. Primärt hostad på **[sr.liot.se](https://sr.liot.se)**, med spegling via GitHub Pages.
 
 ## Licens
 

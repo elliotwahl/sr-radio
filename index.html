@@ -368,6 +368,14 @@
       border-top: 1px solid var(--border);
     }
 
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
     /* ─── RESPONSIVE ──────────────────────────── */
     @media (max-width: 720px) {
       .header-inner {
@@ -471,7 +479,10 @@
     </section>
   </main>
 
-  <footer>Inofficiell SR-spelare &mdash; Strömmar via Sveriges Radios publika direktlänkar</footer>
+  <footer>
+    Inofficiell SR-spelare &mdash; Strömmar via Sveriges Radios publika direktlänkar &mdash;
+    <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener">Källkod på GitHub</a>
+  </footer>
 
   <audio id="audio" preload="none"></audio>
 
