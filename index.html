@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Sveriges Radio live – Lyssna på SR direkt när sajten är nere</title>
   <meta name="description" content="Lyssna på Sveriges Radio live direkt i webbläsaren – P1, P2, P3, P4 och alla lokala kanaler. Fungerar även när sverigesradio.se eller SR-appen inte går att nå.">
   <meta name="keywords" content="sveriges radio nere, sr nere, lyssna på sr, sr live, p1 live, p2 live, p3 live, p4 live, sveriges radio direkt, sr stream">
@@ -576,7 +576,7 @@
       .mobile-player {
         display: flex;
         position: fixed;
-        bottom: 56px; left: 0; right: 0;
+        bottom: calc(56px + env(safe-area-inset-bottom)); left: 0; right: 0;
         z-index: 200;
         background: var(--surface);
         border-top: 1px solid var(--border);
@@ -667,7 +667,8 @@
         position: fixed;
         bottom: 0; left: 0; right: 0;
         z-index: 201;
-        height: 56px;
+        height: calc(56px + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom);
         background: var(--surface);
         border-top: 1px solid var(--border);
       }
