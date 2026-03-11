@@ -160,6 +160,19 @@
       100% { height: 28px; background: var(--accent); }
     }
 
+    .vu.loading .vu-bar:nth-child(1) { animation: vu-load 1s ease-in-out infinite 0.00s; }
+    .vu.loading .vu-bar:nth-child(2) { animation: vu-load 1s ease-in-out infinite 0.10s; }
+    .vu.loading .vu-bar:nth-child(3) { animation: vu-load 1s ease-in-out infinite 0.20s; }
+    .vu.loading .vu-bar:nth-child(4) { animation: vu-load 1s ease-in-out infinite 0.30s; }
+    .vu.loading .vu-bar:nth-child(5) { animation: vu-load 1s ease-in-out infinite 0.40s; }
+    .vu.loading .vu-bar:nth-child(6) { animation: vu-load 1s ease-in-out infinite 0.50s; }
+    .vu.loading .vu-bar:nth-child(7) { animation: vu-load 1s ease-in-out infinite 0.60s; }
+
+    @keyframes vu-load {
+      0%, 100% { height: 4px;  background: var(--border); }
+      50%      { height: 22px; background: var(--accent); opacity: 0.5; }
+    }
+
     /* Controls */
     .controls {
       display: flex;
@@ -898,6 +911,7 @@
       const s = LANGS[lang].s;
       dot.className = 'dot';
       vu.classList.remove('active');
+      vu.classList.remove('loading');
       playIcon.innerHTML = ICONS.play;
       if (state === 'playing') {
         dot.classList.add('live');
@@ -907,6 +921,7 @@
       } else if (state === 'loading') {
         dot.classList.add('loading');
         label.textContent = s.loading;
+        vu.classList.add('loading');
       } else if (state === 'error')  { label.textContent = s.error;
       } else if (state === 'paused') { label.textContent = s.paused;
       } else                         { label.textContent = s.offline; }
