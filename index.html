@@ -543,22 +543,115 @@
       line-height: 1.5;
     }
 
+    /* ─── MOBILE BOTTOM PLAYER ──────────────── */
+    .mobile-player {
+      display: none;
+    }
+
     /* ─── RESPONSIVE ──────────────────────────── */
     @media (max-width: 720px) {
+      /* Slim header — only wordmark */
       .header-inner {
         grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 1rem 1.25rem;
+        padding: 0.9rem 1.25rem;
       }
+      .station-info,
+      .controls { display: none; }
 
-      .controls { flex-wrap: wrap; gap: 0.75rem; }
-      .station-name { font-size: 1.4rem; }
-
-      main { padding: 1.5rem 1.25rem 4rem; }
+      main { padding: 1.25rem 1rem 7rem; }
 
       .grid-national { grid-template-columns: repeat(2, 1fr); }
       .grid-special  { grid-template-columns: repeat(2, 1fr); }
       .grid-local    { grid-template-columns: repeat(2, 1fr); }
+
+      /* Bottom player */
+      .mobile-player {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        z-index: 200;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.10);
+        padding: 0 1.25rem;
+        align-items: center;
+        gap: 1rem;
+        height: 68px;
+      }
+
+      .mobile-icon {
+        width: 40px; height: 40px;
+        border-radius: 8px;
+        background: var(--accent-light);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+      .mobile-icon svg { width: 20px; height: 20px; color: var(--accent); }
+
+      .mobile-info {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .mobile-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+      }
+      .mobile-name.idle { color: var(--text-muted); font-weight: 400; }
+      .mobile-sub {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 0.1rem;
+      }
+
+      .mobile-vu {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .mobile-vu .vu-bar { width: 3px; height: 3px; }
+      .mobile-vu.active .vu-bar:nth-child(1) { animation: vu1 0.75s ease-in-out infinite alternate; }
+      .mobile-vu.active .vu-bar:nth-child(2) { animation: vu1 0.55s ease-in-out infinite alternate 0.12s; }
+      .mobile-vu.active .vu-bar:nth-child(3) { animation: vu1 0.95s ease-in-out infinite alternate 0.24s; }
+      .mobile-vu.active .vu-bar:nth-child(4) { animation: vu1 0.65s ease-in-out infinite alternate 0.08s; }
+      .mobile-vu.active .vu-bar:nth-child(5) { animation: vu1 0.85s ease-in-out infinite alternate 0.18s; }
+      .mobile-vu.loading .vu-bar:nth-child(1) { animation: vu-load 1s ease-in-out infinite 0.00s; }
+      .mobile-vu.loading .vu-bar:nth-child(2) { animation: vu-load 1s ease-in-out infinite 0.10s; }
+      .mobile-vu.loading .vu-bar:nth-child(3) { animation: vu-load 1s ease-in-out infinite 0.20s; }
+      .mobile-vu.loading .vu-bar:nth-child(4) { animation: vu-load 1s ease-in-out infinite 0.30s; }
+      .mobile-vu.loading .vu-bar:nth-child(5) { animation: vu-load 1s ease-in-out infinite 0.40s; }
+
+      .mobile-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-shrink: 0;
+      }
+
+      .mobile-play-btn {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s, transform 0.15s;
+        box-shadow: 0 2px 8px rgba(0,86,168,0.3);
+      }
+      .mobile-play-btn:not(:disabled):hover { background: var(--accent-hover); transform: scale(1.05); }
+      .mobile-play-btn:disabled { background: var(--border); box-shadow: none; cursor: default; }
+      .mobile-play-btn svg { width: 18px; height: 18px; }
     }
 
     @media (max-width: 400px) {
@@ -686,6 +779,33 @@
     &mdash; Strömmar via Sveriges Radios publika direktlänkar &mdash;
     <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener" id="i18n-source">Källkod på GitHub</a>
   </footer>
+
+  <div class="mobile-player" id="mobilePlayer">
+    <div class="mobile-icon">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+    </div>
+    <div class="mobile-info">
+      <div class="mobile-name idle" id="mobileName">Välj en kanal</div>
+      <div class="mobile-sub" id="mobileSub"></div>
+    </div>
+    <div class="mobile-vu" id="mobileVu">
+      <div class="vu-bar"></div>
+      <div class="vu-bar"></div>
+      <div class="vu-bar"></div>
+      <div class="vu-bar"></div>
+      <div class="vu-bar"></div>
+    </div>
+    <div class="mobile-controls">
+      <button class="settings-btn" id="mobileSettingsBtn" aria-label="Inställningar">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a6.99 6.99 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </button>
+      <button class="mobile-play-btn" id="mobilePlayBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="currentColor" id="mobilePlayIcon">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
   <audio id="audio" preload="none"></audio>
 
@@ -894,15 +1014,20 @@
     ];
 
     // ── DOM refs ───────────────────────────────────────────────
-    const audio     = document.getElementById('audio');
-    const playBtn   = document.getElementById('playBtn');
-    const playIcon  = document.getElementById('playIcon');
-    const nameEl    = document.getElementById('stationName');
-    const subEl     = document.getElementById('stationSub');
-    const dot       = document.getElementById('dot');
-    const label     = document.getElementById('statusLabel');
-    const vu        = document.getElementById('vu');
-    const volSlider = document.getElementById('volSlider');
+    const audio          = document.getElementById('audio');
+    const playBtn        = document.getElementById('playBtn');
+    const playIcon       = document.getElementById('playIcon');
+    const nameEl         = document.getElementById('stationName');
+    const subEl          = document.getElementById('stationSub');
+    const dot            = document.getElementById('dot');
+    const label          = document.getElementById('statusLabel');
+    const vu             = document.getElementById('vu');
+    const volSlider      = document.getElementById('volSlider');
+    const mobilePlayBtn  = document.getElementById('mobilePlayBtn');
+    const mobilePlayIcon = document.getElementById('mobilePlayIcon');
+    const mobileName     = document.getElementById('mobileName');
+    const mobileSub      = document.getElementById('mobileSub');
+    const mobileVu       = document.getElementById('mobileVu');
 
     // ── State ──────────────────────────────────────────────────
     let current = null;
@@ -961,6 +1086,10 @@
       nameEl.classList.remove('idle');
       subEl.textContent = LANGS[lang].s[ch.id] || '';
       playBtn.disabled = false;
+      mobileName.textContent = ch.name;
+      mobileName.classList.remove('idle');
+      mobileSub.textContent = LANGS[lang].s[ch.id] || '';
+      mobilePlayBtn.disabled = false;
       audio.src = streamUrl(ch, quality);
       audio.volume = parseFloat(volSlider.value);
       audio.play().catch(() => {});
@@ -972,16 +1101,22 @@
       dot.className = 'dot';
       vu.classList.remove('active');
       vu.classList.remove('loading');
+      mobileVu.classList.remove('active');
+      mobileVu.classList.remove('loading');
       playIcon.innerHTML = ICONS.play;
+      mobilePlayIcon.innerHTML = ICONS.play;
       if (state === 'playing') {
         dot.classList.add('live');
         label.textContent = s.live;
         vu.classList.add('active');
+        mobileVu.classList.add('active');
         playIcon.innerHTML = ICONS.pause;
+        mobilePlayIcon.innerHTML = ICONS.pause;
       } else if (state === 'loading') {
         dot.classList.add('loading');
         label.textContent = s.loading;
         vu.classList.add('loading');
+        mobileVu.classList.add('loading');
       } else if (state === 'error')  { label.textContent = s.error;
       } else if (state === 'paused') { label.textContent = s.paused;
       } else                         { label.textContent = s.offline; }
@@ -993,13 +1128,15 @@
     audio.addEventListener('stalled', () => setState('loading'));
     audio.addEventListener('error',   () => setState('error'));
 
-    playBtn.addEventListener('click', () => {
+    function togglePlay() {
       if (!current) return;
       if (audio.paused) {
         if (!audio.src) audio.src = streamUrl(current, quality);
         audio.play().catch(() => {});
       } else { audio.pause(); }
-    });
+    }
+    playBtn.addEventListener('click', togglePlay);
+    mobilePlayBtn.addEventListener('click', togglePlay);
 
     // ── Volume ─────────────────────────────────────────────────
     volSlider.addEventListener('input', () => { audio.volume = parseFloat(volSlider.value); });
@@ -1082,8 +1219,15 @@
       settingsBtn.classList.toggle('open', open);
     });
 
+    const mobileSettingsBtn = document.getElementById('mobileSettingsBtn');
+    mobileSettingsBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = settingsPanel.classList.toggle('open');
+      settingsBtn.classList.toggle('open', open);
+    });
+
     document.addEventListener('click', e => {
-      if (!settingsBtn.contains(e.target) && !settingsPanel.contains(e.target)) {
+      if (!settingsBtn.contains(e.target) && !settingsPanel.contains(e.target) && !mobileSettingsBtn.contains(e.target)) {
         settingsPanel.classList.remove('open');
         settingsBtn.classList.remove('open');
       }
