@@ -548,6 +548,9 @@
       display: none;
     }
 
+    /* ─── Mobile nav ──────────────────────────── */
+    .mobile-nav { display: none; }
+
     /* ─── RESPONSIVE ──────────────────────────── */
     @media (max-width: 720px) {
       /* Slim header — only wordmark */
@@ -557,8 +560,12 @@
       }
       .station-name, .station-sub, .vu,
       .controls { display: none; }
+      .wordmark {
+        font-size: 1.25rem;
+        letter-spacing: 0.01em;
+      }
 
-      main { padding: 1.25rem 1rem 7rem; }
+      main { padding: 1.25rem 1rem calc(68px + 56px + 1rem); }
 
       .grid-national { grid-template-columns: repeat(2, 1fr); }
       .grid-special  { grid-template-columns: repeat(2, 1fr); }
@@ -568,7 +575,7 @@
       .mobile-player {
         display: flex;
         position: fixed;
-        bottom: 0; left: 0; right: 0;
+        bottom: 56px; left: 0; right: 0;
         z-index: 200;
         background: var(--surface);
         border-top: 1px solid var(--border);
@@ -652,6 +659,36 @@
       .mobile-play-btn:not(:disabled):hover { background: var(--accent-hover); transform: scale(1.05); }
       .mobile-play-btn:disabled { background: var(--border); box-shadow: none; cursor: default; }
       .mobile-play-btn svg { width: 18px; height: 18px; }
+
+      /* Bottom tab nav */
+      .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        z-index: 201;
+        height: 56px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+      }
+      .nav-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-family: inherit;
+        font-size: 0.65rem;
+        font-weight: 500;
+        padding: 0;
+        transition: color 0.15s;
+      }
+      .nav-tab svg { width: 22px; height: 22px; }
+      .nav-tab.active { color: var(--accent); }
     }
 
     @media (max-width: 400px) {
@@ -749,7 +786,7 @@
   <main>
     <p class="intro">Lyssna på Sveriges Radio live direkt i webbläsaren — fungerar även när <strong>sverigesradio.se är nere</strong> eller SR-appen inte svarar. Välj kanal nedan.</p>
 
-    <section class="section">
+    <section class="section" id="sec-national">
       <div class="section-head">
         <span class="section-label" id="i18n-national">Rikskanaler</span>
         <div class="section-line"></div>
@@ -757,7 +794,7 @@
       <div class="grid grid-national" id="grid-national"></div>
     </section>
 
-    <section class="section">
+    <section class="section" id="sec-special">
       <div class="section-head">
         <span class="section-label" id="i18n-special">Övriga kanaler</span>
         <div class="section-line"></div>
@@ -765,7 +802,7 @@
       <div class="grid grid-special" id="grid-special"></div>
     </section>
 
-    <section class="section">
+    <section class="section" id="sec-local">
       <div class="section-head">
         <span class="section-label" id="i18n-local">Lokala P4-kanaler</span>
         <div class="section-line"></div>
@@ -806,6 +843,21 @@
       </button>
     </div>
   </div>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="nav-tab active" data-tab="national">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Riks</span>
+    </button>
+    <button class="nav-tab" data-tab="local">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      <span>Lokala</span>
+    </button>
+    <button class="nav-tab" data-tab="special">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+      <span>Övrigt</span>
+    </button>
+  </nav>
 
   <audio id="audio" preload="none"></audio>
 
@@ -1241,6 +1293,41 @@
     document.getElementById('disclaimerClose').addEventListener('click', () => {
       document.getElementById('disclaimer').style.display = 'none';
     });
+
+    // ── Mobile tab navigation ──────────────────────────────────
+    const TABS = {
+      national: document.getElementById('sec-national'),
+      local:    document.getElementById('sec-local'),
+      special:  document.getElementById('sec-special'),
+    };
+    let activeTab = 'national';
+
+    function showTab(key) {
+      activeTab = key;
+      Object.entries(TABS).forEach(([k, el]) => {
+        el.style.display = (k === key) ? '' : 'none';
+      });
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === key);
+      });
+    }
+
+    // Only activate tab logic on mobile
+    function applyTabMode() {
+      const mobile = window.matchMedia('(max-width: 720px)').matches;
+      if (mobile) {
+        showTab(activeTab);
+      } else {
+        Object.values(TABS).forEach(el => el.style.display = '');
+      }
+    }
+
+    document.querySelectorAll('.nav-tab').forEach(btn => {
+      btn.addEventListener('click', () => { showTab(btn.dataset.tab); });
+    });
+
+    window.matchMedia('(max-width: 720px)').addEventListener('change', applyTabMode);
+    applyTabMode();
 
     // ── Init ───────────────────────────────────────────────────
     setLang(lang);
