@@ -3,7 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SR Live</title>
+  <title>Sveriges Radio live – Lyssna på SR direkt när sajten är nere</title>
+  <meta name="description" content="Lyssna på Sveriges Radio live direkt i webbläsaren – P1, P2, P3, P4 och alla lokala kanaler. Fungerar även när sverigesradio.se eller SR-appen inte går att nå.">
+  <meta name="keywords" content="sveriges radio nere, sr nere, lyssna på sr, sr live, p1 live, p2 live, p3 live, p4 live, sveriges radio direkt, sr stream">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sr.liot.se">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sr.liot.se">
+  <meta property="og:title" content="Sveriges Radio live – Lyssna på SR direkt">
+  <meta property="og:description" content="Direktlänkar till alla SR-kanaler. Fungerar även när sverigesradio.se är nere.">
+  <meta property="og:locale" content="sv_SE">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sveriges Radio live – Lyssna på SR direkt">
+  <meta name="twitter:description" content="Direktlänkar till alla SR-kanaler. Fungerar även när sverigesradio.se är nere.">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SR Live",
+    "url": "https://sr.liot.se",
+    "description": "Lyssna på Sveriges Radio live – P1, P2, P3, P4 och alla lokala kanaler direkt i webbläsaren.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "inLanguage": "sv",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -271,8 +303,17 @@
     main {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 2.5rem 2rem 5rem;
+      padding: 2rem 2rem 5rem;
     }
+
+    .intro {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .intro strong { color: var(--text); font-weight: 600; }
 
     .section { margin-bottom: 2.5rem; }
 
@@ -442,6 +483,7 @@
           <button class="q-btn active" data-q="128">128</button>
           <button class="q-btn" data-q="96">96</button>
           <button class="q-btn" data-q="320">320</button>
+          <button class="q-btn" data-q="flac" title="Endast tillgänglig för P2">FLAC</button>
         </div>
 
         <button class="play-btn" id="playBtn" disabled>
@@ -454,6 +496,8 @@
   </header>
 
   <main>
+    <p class="intro">Lyssna på Sveriges Radio live direkt i webbläsaren — fungerar även när <strong>sverigesradio.se är nere</strong> eller SR-appen inte svarar. Välj kanal nedan.</p>
+
     <section class="section">
       <div class="section-head">
         <span class="section-label">Rikskanaler</span>
@@ -480,7 +524,8 @@
   </main>
 
   <footer>
-    Inofficiell SR-spelare &mdash; Strömmar via Sveriges Radios publika direktlänkar &mdash;
+    Byggd av <a href="https://liot.se" target="_blank" rel="noopener">Elliot Wahl</a>
+    &mdash; Strömmar via Sveriges Radios publika direktlänkar &mdash;
     <a href="https://github.com/elliotwahl/sr-radio" target="_blank" rel="noopener">Källkod på GitHub</a>
   </footer>
 
@@ -555,9 +600,10 @@
     // ── URL builder ─────────────────────────────────────────────
     function streamUrl(ch, q) {
       const id = ch.id;
-      if (q === '96')  return `https://live1.sr.se/${id}-mp3-96`;
-      if (q === '32')  return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-32`;
-      if (q === '320') return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-320`;
+      if (q === '96')   return `https://live1.sr.se/${id}-mp3-96`;
+      if (q === '32')   return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-32`;
+      if (q === '320')  return ch.noHigh ? `https://live1.sr.se/${id}-aac-128` : `https://live1.sr.se/${id}-aac-320`;
+      if (q === 'flac') return id === 'p2' ? `https://live1.sr.se/p2-flac` : `https://live1.sr.se/${id}-aac-320`;
       return `https://live1.sr.se/${id}-aac-128`;
     }
 
