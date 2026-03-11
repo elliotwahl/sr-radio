@@ -506,9 +506,9 @@
 
     .settings-panel {
       display: none;
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
+      position: fixed;
+      top: 72px;
+      right: 2rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -661,6 +661,14 @@
       .mobile-play-btn:disabled { background: var(--border); box-shadow: none; cursor: default; }
       .mobile-play-btn svg { width: 18px; height: 18px; }
 
+      /* Settings panel on mobile — floats above the player */
+      .settings-panel {
+        top: auto;
+        right: 1rem;
+        left: 1rem;
+        bottom: calc(68px + 66px + env(safe-area-inset-bottom) + 0.5rem);
+      }
+
       /* Bottom tab nav */
       .mobile-nav {
         display: flex;
@@ -740,33 +748,6 @@
           <button class="settings-btn" id="settingsBtn" aria-label="Inställningar">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a6.99 6.99 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
           </button>
-          <div class="settings-panel" id="settingsPanel">
-            <div class="settings-group">
-              <div class="settings-group-label">Kvalitet</div>
-              <div class="quality">
-                <button class="q-btn" data-q="32">32</button>
-                <button class="q-btn active" data-q="128">128</button>
-                <button class="q-btn" data-q="96">96</button>
-                <button class="q-btn" data-q="320">320</button>
-                <button class="q-btn" data-q="flac" title="Endast tillgänglig för P2">FLAC</button>
-              </div>
-            </div>
-            <div class="settings-group">
-              <div class="settings-group-label">Språk</div>
-              <select id="langSel" class="lang-sel" aria-label="Välj språk / Select language">
-                <option value="sv">Svenska</option>
-                <option value="en">English</option>
-                <option value="fi">Suomi</option>
-                <option value="se">Davvisámegiella</option>
-                <option value="fit">Meänkieli</option>
-                <option value="rom">Romani</option>
-                <option value="yi">ייִדיש</option>
-                <option value="ar">العربية</option>
-                <option value="fa">فارسی</option>
-                <option value="so">Soomaali</option>
-              </select>
-            </div>
-          </div>
         </div>
 
         <button class="play-btn" id="playBtn" disabled>
@@ -777,6 +758,34 @@
       </div>
     </div>
   </header>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-group">
+      <div class="settings-group-label">Kvalitet</div>
+      <div class="quality">
+        <button class="q-btn" data-q="32">32</button>
+        <button class="q-btn active" data-q="128">128</button>
+        <button class="q-btn" data-q="96">96</button>
+        <button class="q-btn" data-q="320">320</button>
+        <button class="q-btn" data-q="flac" title="Endast tillgänglig för P2">FLAC</button>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Språk</div>
+      <select id="langSel" class="lang-sel" aria-label="Välj språk / Select language">
+        <option value="sv">Svenska</option>
+        <option value="en">English</option>
+        <option value="fi">Suomi</option>
+        <option value="se">Davvisámegiella</option>
+        <option value="fit">Meänkieli</option>
+        <option value="rom">Romani</option>
+        <option value="yi">ייִדיש</option>
+        <option value="ar">العربية</option>
+        <option value="fa">فارسی</option>
+        <option value="so">Soomaali</option>
+      </select>
+    </div>
+  </div>
 
   <div id="disclaimer" class="disclaimer" style="display:none">
     <div class="disclaimer-inner">
