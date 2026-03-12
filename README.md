@@ -45,7 +45,13 @@ Fyra kvalitetsnivåer stöds:
 
 P2 har dessutom en unik FLAC-ström för förlustfri kvalitet: `live1.sr.se/p2-flac`.
 
-Uppspelningen sker via webbläsarens inbyggda `<audio>`-element. Ingen server, ingen proxy — webbläsaren ansluter direkt till SR:s streamingservrar. Ingen inloggning, inga cookies, ingen tracking.
+### Inget innehåll hostas här
+
+Vevradion varken lagrar eller vidaredistrbuerar något ljudinnehåll. Det närmaste analogin är att bädda in en YouTube-video: när du klickar på en kanal skickar din webbläsare en förfrågan direkt till SR:s streamingservrar på `live1.sr.se` — Vevradion är aldrig inblandad i den kommunikationen. Allt som vår server levererar är HTML, CSS och JavaScript. Ljudet kommer alltid från SR.
+
+Mer precist: webbläsarens `<audio>`-element öppnar en HTTP-anslutning mot SR:s server och läser en kontinuerlig dataström. SR:s server bestämmer vad som sänds och kan när som helst avbryta eller byta innehåll. Det skiljer sig från en nedladdning (där en fil kopieras) — här är det ett flöde i realtid som aldrig passerar våra servrar.
+
+Uppspelningen sker via webbläsarens inbyggda `<audio>`-element. Ingen proxy, ingen mellanhand — webbläsaren ansluter direkt till SR:s streamingservrar. Ingen inloggning, inga cookies, ingen tracking.
 
 ---
 
@@ -133,11 +139,11 @@ På skärmar upp till 720 px döljs desktop-kontrollen och ersätts av:
 
 ## Hosting och deployment
 
-Primär domän: **[sr.liot.se](https://sr.liot.se)** — pekar mot GitHub Pages via CNAME.
+Primär domän: **[sr.liot.se](https://sr.liot.se)** — pekar mot Netlify via CNAME.
 
-Repo: `github.com/elliotwahl/sr-radio`, branch `master` → GitHub Pages.
+Repo: `github.com/elliotwahl/sr-radio`, branch `master` → GitHub Pages (spegelsajt).
 
-Utveckling sker i branchen `beta`. När en feature är klar mergas den till `master`, varpå GitHub Pages automatiskt driftsätter den senaste versionen. En GitHub Actions-workflow körs vid varje push till `master` och uppdaterar `changelog.html` med de commits som ingick i releasen.
+Utveckling sker i branchen `beta`. När en feature är klar mergas den till `master`, varpå sajten automatiskt driftsätts. En GitHub Actions-workflow körs vid varje push till `master` och uppdaterar `changelog.html` med de commits som ingick i releasen.
 
 ---
 
