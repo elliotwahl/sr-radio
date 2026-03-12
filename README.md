@@ -2,31 +2,150 @@
 
 En enkel webbspelare för Sveriges Radios alla kanaler. Passar både som nödfallsalternativ när SR:s egna plattformar (sverigesradio.se, appen) inte fungerar — och som ett renare, enklare sätt att lyssna i vardagen.
 
-## Syfte
+**Live:** [sr.liot.se](https://sr.liot.se)
 
-SR:s webbplats och appar kan drabbas av driftstörningar, men de underliggande ljudströmmarna (som distribueras via separat infrastruktur) är ofta fortsatt tillgängliga. Den här sidan ger direkt tillgång till alla strömmar utan att gå via SR:s sajt. Men den fungerar lika bra när allt är igång — för den som föredrar en avskalad lyssnarupplevelse utan onödiga distraktioner.
+---
+
+## Bakgrund
+
+En dag låg Sveriges Radios webbplats och app nere. De underliggande ljudströmmarna fungerade däremot utmärkt — SR distribuerar dem via en separat infrastruktur som inte påverkas av problem i den publika sajten. Vevradion byggdes samma dag för att ge direkt tillgång till strömmarna utan att gå via SR:s egna plattformar.
+
+---
 
 ## Kanaler
 
-Alla rikskanaler (P1, P2, P3, P6), lokala P4-kanaler för alla 25 regioner samt övriga kanaler som Ekot direkt, P3 Din gata, P4 Plus, Knattekanalen, Sameradion och SR Finska.
+Totalt 36 kanaler i tre grupper:
 
-## Hur det fungerar
+**Rikskanaler** — P1, P2, P3, P6
 
-Sidan hämtar ljud direkt från SR:s publika streamingservrar på `live1.sr.se`. Länkarna är offentligt dokumenterade av SR själva. Ingen inloggning, inga cookies, ingen tracking.
+**Övriga kanaler** — Ekot direkt, P3 Din gata, P4 Plus, P4 Digital, Knattekanalen, Sameradion, SR Finska
 
-Fyra kvalitetsnivåer väljs i spelaren:
-- **32 kbps** — HE-AAC-V2, lägst dataförbrukning
-- **96 kbps** — MP3
-- **128 kbps** — AAC-LC, bra balans (standard)
-- **320 kbps** — AAC-LC, högst kvalitet
+**Lokala P4-kanaler** — Alla 25 regioner: Blekinge, Dalarna, Gotland, Gävleborg, Göteborg, Halland, Jämtland, Jönköping, Kalmar, Kristianstad, Kronoberg, Malmöhus, Norrbotten, Sjuhärad, Skaraborg, Stockholm, Sörmland, Uppland, Värmland, Väst, Västerbotten, Västernorrland, Västmanland, Örebro, Östergötland.
 
-## Teknisk stack
+---
 
-En enda HTML-fil utan externa beroenden eller byggsteg. Primärt hostad på **[sr.liot.se](https://sr.liot.se)**, med spegling via GitHub Pages.
+## Hur strömmarna fungerar
+
+Alla strömmar hämtas direkt från SR:s publika streamingservrar via URL-mönstret:
+
+```
+https://live1.sr.se/{kanal-id}-{format}-{bithastighet}
+```
+
+Exempel: `https://live1.sr.se/p1-aac-128`
+
+Fyra kvalitetsnivåer stöds:
+
+| Kvalitet | Format | Användning |
+|---|---|---|
+| 32 kbps | HE-AAC-V2 | Mobildata, låg förbrukning |
+| 96 kbps | MP3 | Bred kompatibilitet |
+| 128 kbps | AAC-LC | Standard, bra balans |
+| 320 kbps | AAC-LC | Högsta kvalitet |
+
+P2 har dessutom en unik FLAC-ström för förlustfri kvalitet: `live1.sr.se/p2-flac`.
+
+Uppspelningen sker via webbläsarens inbyggda `<audio>`-element. Ingen server, ingen proxy — webbläsaren ansluter direkt till SR:s streamingservrar. Ingen inloggning, inga cookies, ingen tracking.
+
+---
+
+## Projektstruktur
+
+Projektet är medvetet enkelt:
+
+```
+sr-radio/
+├── index.html          # Hela applikationen — HTML, CSS och JS i en fil
+├── om.html             # Om-sida med bakgrund och syfte
+├── installera.html     # Guide för installation på hemskärm
+├── changelog.html      # Ändringslogg, uppdateras automatiskt
+├── apple-touch-icon.png
+├── favicon.svg
+├── favicon.png
+├── .github/
+│   └── workflows/
+│       └── changelog.yml   # GitHub Actions: uppdaterar changelog vid push till main
+└── README.md
+```
+
+Det finns inget byggsteg, inga paket och inga externa beroenden utöver Google Fonts. Allt lever i statiska HTML-filer som kan hostas varsomhelst.
+
+---
+
+## index.html — applikationens hjärta
+
+Hela spelaren ryms i en enda fil. Strukturen inuti den:
+
+### CSS-variabler och tema
+
+Alla färger definieras som CSS-variabler i `:root` — `--bg`, `--surface`, `--accent` och så vidare. Det gör det enkelt att justera temat på ett ställe.
+
+### Kanaldata (JavaScript)
+
+Kanalerna definieras som tre arrays direkt i skriptet:
+
+```js
+const NATIONAL = [{ id: 'p1', name: 'P1' }, ...]
+const SPECIAL  = [{ id: 'ekotdirekt', name: 'Ekot direkt' }, ...]
+const LOCAL    = [{ id: 'p4sth', name: 'P4 Stockholm' }, ...]
+```
+
+`id` matchar exakt den del av SR:s stream-URL som identifierar kanalen.
+
+### Flerspråksstöd (i18n)
+
+Ett `LANGS`-objekt innehåller översättningar för alla 10 språk SR sänder på. Varje språk har ett `s`-objekt med gränssnittstext, en `dir`-egenskap (`ltr`/`rtl`) och ett valfritt `channelId` för att markera vilken kanal som sänder på det språket.
+
+```js
+const LANGS = {
+  sv: { name: 'Svenska', dir: 'ltr', s: { wordmark: 'Vevradion', idle: 'Välj en kanal', ... } },
+  ar: { name: 'العربية', dir: 'rtl', s: { ... } },
+  ...
+}
+```
+
+Funktionen `setLang(code)` uppdaterar alla textelement i DOM:en, sätter `document.documentElement.lang` och `dir` (för RTL-stöd), och visar eventuell AI-översättningsbanner.
+
+### Uppspelning
+
+Spelaren använder ett enda `<audio>`-element. Funktionen `streamUrl(ch, q)` bygger rätt URL utifrån vald kanal och kvalitet. `setState(state)` synkroniserar UI — statusdot, VU-meter och play/paus-ikon — med ljudets faktiska tillstånd via `audio`-eventsen `playing`, `pause`, `waiting`, `stalled` och `error`.
+
+### Mobilläge
+
+På skärmar upp till 720 px döljs desktop-kontrollen och ersätts av:
+
+- En **fast bottom player** med kanalnamn, mini-VU-meter och play/paus-knapp
+- En **fliknavigering** (Riks / Lokala / Övrigt) som visar en sektion i taget
+- En **inställningspanel** (`position: fixed`) som öppnas uppåt ovanför spelaren
+
+### Tillgänglighet (WCAG 2.1 AA)
+
+- Skip-link för tangentbordsnavigering
+- Korrekt rubrikhierarki (`h1`, `h2`)
+- `aria-live` på statusetiketten
+- `aria-pressed` på kanal- och kvalitetsknappar
+- `aria-current` på aktiv mobilflik
+- `aria-label` på alla ikontryck
+- `prefers-reduced-motion` stänger av animationer
+- Synliga fokusindikatorer via `:focus-visible`
+
+---
+
+## Hosting och deployment
+
+Primär domän: **[sr.liot.se](https://sr.liot.se)** — pekar mot GitHub Pages via CNAME.
+
+Repo: `github.com/elliotwahl/sr-radio`, branch `master` → GitHub Pages.
+
+Utveckling sker i branchen `beta`. När en feature är klar mergas den till `master`, varpå GitHub Pages automatiskt driftsätter den senaste versionen. En GitHub Actions-workflow körs vid varje push till `master` och uppdaterar `changelog.html` med de commits som ingick i releasen.
+
+---
 
 ## Byggt med AI
 
 Hela projektet är utvecklat med **[Claude Code](https://claude.ai/claude-code)** — Anthropics AI-verktyg för mjukvaruutveckling. Kod, design och innehåll är genererade och itererade fram genom konversation med Claude, utan att någon rad skrivits manuellt.
+
+---
 
 ## Licens
 
